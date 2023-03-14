@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:provider/provider.dart';
@@ -143,6 +146,31 @@ class ImageCard extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () async {
+                        final s = await api.getCurrentWallPaper();
+                        final r = await showCupertinoDialog(
+                            context: ctx,
+                            builder: (c) {
+                              return CupertinoAlertDialog(
+                                title: Text("是否要将壁纸$s替换为${paper.filePath}?"),
+                                actions: [
+                                  CupertinoActionSheetAction(
+                                      onPressed: () {
+                                        Navigator.of(ctx).pop(-1);
+                                      },
+                                      child: const Text("取消")),
+                                  CupertinoActionSheetAction(
+                                      onPressed: () {
+                                        Navigator.of(ctx).pop(0);
+                                      },
+                                      child: const Text("确定"))
+                                ],
+                              );
+                            });
+
+                        if (r == -1) {
+                          return;
+                        }
+
                         await api.setWallPaper(s: paper.filePath);
                       },
                       child: const Icon(
