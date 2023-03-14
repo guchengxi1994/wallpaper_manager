@@ -19,6 +19,8 @@ use std::sync::Arc;
 
 // Section: imports
 
+use crate::db::model::WallPaper;
+
 // Section: wire functions
 
 fn wire_rust_bridge_say_hello_impl(port_: MessagePort) {
@@ -29,6 +31,83 @@ fn wire_rust_bridge_say_hello_impl(port_: MessagePort) {
             mode: FfiCallMode::Normal,
         },
         move || move |task_callback| Ok(rust_bridge_say_hello()),
+    )
+}
+fn wire_init_db_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "init_db",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(init_db()),
+    )
+}
+fn wire_new_paper_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "new_paper",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| Ok(new_paper(api_s))
+        },
+    )
+}
+fn wire_get_all_papers_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_all_papers",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_all_papers()),
+    )
+}
+fn wire_get_paper_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_paper_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(get_paper_by_id(api_i))
+        },
+    )
+}
+fn wire_delete_paper_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "delete_paper_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(delete_paper_by_id(api_i))
+        },
+    )
+}
+fn wire_set_is_fav_by_id_impl(
+    port_: MessagePort,
+    i: impl Wire2Api<i64> + UnwindSafe,
+    is_fav: impl Wire2Api<i64> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "set_is_fav_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            let api_is_fav = is_fav.wire2api();
+            move |task_callback| Ok(set_is_fav_by_id(api_i, api_is_fav))
+        },
     )
 }
 // Section: wrapper structs
@@ -53,13 +132,47 @@ where
         (!self.is_null()).then(|| self.wire2api())
     }
 }
+
+impl Wire2Api<i64> for i64 {
+    fn wire2api(self) -> i64 {
+        self
+    }
+}
+impl Wire2Api<u8> for u8 {
+    fn wire2api(self) -> u8 {
+        self
+    }
+}
+
 // Section: impl IntoDart
+
+impl support::IntoDart for WallPaper {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.wall_paper_id.into_dart(),
+            self.file_path.into_dart(),
+            self.file_hash.into_dart(),
+            self.create_at.into_dart(),
+            self.is_deleted.into_dart(),
+            self.is_fav.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for WallPaper {}
 
 // Section: executor
 
 support::lazy_static! {
     pub static ref FLUTTER_RUST_BRIDGE_HANDLER: support::DefaultHandler = Default::default();
 }
+
+/// cbindgen:ignore
+#[cfg(target_family = "wasm")]
+#[path = "bridge_generated.web.rs"]
+mod web;
+#[cfg(target_family = "wasm")]
+pub use web::*;
 
 #[cfg(not(target_family = "wasm"))]
 #[path = "bridge_generated.io.rs"]

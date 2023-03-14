@@ -13,6 +13,48 @@ abstract class Native {
   Future<String> rustBridgeSayHello({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRustBridgeSayHelloConstMeta;
+
+  Future<void> initDb({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kInitDbConstMeta;
+
+  Future<int> newPaper({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kNewPaperConstMeta;
+
+  Future<List<WallPaper>> getAllPapers({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetAllPapersConstMeta;
+
+  Future<WallPaper?> getPaperById({required int i, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetPaperByIdConstMeta;
+
+  Future<int> deletePaperById({required int i, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDeletePaperByIdConstMeta;
+
+  Future<int> setIsFavById({required int i, required int isFav, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetIsFavByIdConstMeta;
+}
+
+class WallPaper {
+  final int wallPaperId;
+  final String filePath;
+  final String fileHash;
+  final int createAt;
+  final int isDeleted;
+  final int isFav;
+
+  WallPaper({
+    required this.wallPaperId,
+    required this.filePath,
+    required this.fileHash,
+    required this.createAt,
+    required this.isDeleted,
+    required this.isFav,
+  });
 }
 
 class NativeImpl implements Native {
@@ -40,6 +82,108 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Future<void> initDb({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_init_db(port_),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kInitDbConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kInitDbConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "init_db",
+        argNames: [],
+      );
+
+  Future<int> newPaper({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_new_paper(port_, arg0),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kNewPaperConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kNewPaperConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "new_paper",
+        argNames: ["s"],
+      );
+
+  Future<List<WallPaper>> getAllPapers({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_all_papers(port_),
+      parseSuccessData: _wire2api_list_wall_paper,
+      constMeta: kGetAllPapersConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetAllPapersConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_all_papers",
+        argNames: [],
+      );
+
+  Future<WallPaper?> getPaperById({required int i, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_paper_by_id(port_, arg0),
+      parseSuccessData: _wire2api_opt_box_autoadd_wall_paper,
+      constMeta: kGetPaperByIdConstMeta,
+      argValues: [i],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetPaperByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_paper_by_id",
+        argNames: ["i"],
+      );
+
+  Future<int> deletePaperById({required int i, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_delete_paper_by_id(port_, arg0),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kDeletePaperByIdConstMeta,
+      argValues: [i],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDeletePaperByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "delete_paper_by_id",
+        argNames: ["i"],
+      );
+
+  Future<int> setIsFavById({required int i, required int isFav, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    var arg1 = _platform.api2wire_i64(isFav);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_set_is_fav_by_id(port_, arg0, arg1),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kSetIsFavByIdConstMeta,
+      argValues: [i, isFav],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetIsFavByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_is_fav_by_id",
+        argNames: ["i", "isFav"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -49,6 +193,22 @@ class NativeImpl implements Native {
     return raw as String;
   }
 
+  WallPaper _wire2api_box_autoadd_wall_paper(dynamic raw) {
+    return _wire2api_wall_paper(raw);
+  }
+
+  int _wire2api_i64(dynamic raw) {
+    return castInt(raw);
+  }
+
+  List<WallPaper> _wire2api_list_wall_paper(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_wall_paper).toList();
+  }
+
+  WallPaper? _wire2api_opt_box_autoadd_wall_paper(dynamic raw) {
+    return raw == null ? null : _wire2api_box_autoadd_wall_paper(raw);
+  }
+
   int _wire2api_u8(dynamic raw) {
     return raw as int;
   }
@@ -56,9 +216,32 @@ class NativeImpl implements Native {
   Uint8List _wire2api_uint_8_list(dynamic raw) {
     return raw as Uint8List;
   }
+
+  void _wire2api_unit(dynamic raw) {
+    return;
+  }
+
+  WallPaper _wire2api_wall_paper(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return WallPaper(
+      wallPaperId: _wire2api_i64(arr[0]),
+      filePath: _wire2api_String(arr[1]),
+      fileHash: _wire2api_String(arr[2]),
+      createAt: _wire2api_i64(arr[3]),
+      isDeleted: _wire2api_i64(arr[4]),
+      isFav: _wire2api_i64(arr[5]),
+    );
+  }
 }
 
 // Section: api2wire
+
+@protected
+int api2wire_u8(int raw) {
+  return raw;
+}
 
 // Section: finalizer
 
@@ -67,6 +250,22 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 
 // Section: api2wire
 
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
+    return api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
+  @protected
+  int api2wire_i64(int raw) {
+    return raw;
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
+    final ans = inner.new_uint_8_list_0(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -181,6 +380,115 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_rust_bridge_say_hello =
       _wire_rust_bridge_say_helloPtr.asFunction<void Function(int)>();
 
+  void wire_init_db(
+    int port_,
+  ) {
+    return _wire_init_db(
+      port_,
+    );
+  }
+
+  late final _wire_init_dbPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_init_db');
+  late final _wire_init_db = _wire_init_dbPtr.asFunction<void Function(int)>();
+
+  void wire_new_paper(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_new_paper(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_new_paperPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_new_paper');
+  late final _wire_new_paper = _wire_new_paperPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_all_papers(
+    int port_,
+  ) {
+    return _wire_get_all_papers(
+      port_,
+    );
+  }
+
+  late final _wire_get_all_papersPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_all_papers');
+  late final _wire_get_all_papers =
+      _wire_get_all_papersPtr.asFunction<void Function(int)>();
+
+  void wire_get_paper_by_id(
+    int port_,
+    int i,
+  ) {
+    return _wire_get_paper_by_id(
+      port_,
+      i,
+    );
+  }
+
+  late final _wire_get_paper_by_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_get_paper_by_id');
+  late final _wire_get_paper_by_id =
+      _wire_get_paper_by_idPtr.asFunction<void Function(int, int)>();
+
+  void wire_delete_paper_by_id(
+    int port_,
+    int i,
+  ) {
+    return _wire_delete_paper_by_id(
+      port_,
+      i,
+    );
+  }
+
+  late final _wire_delete_paper_by_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_delete_paper_by_id');
+  late final _wire_delete_paper_by_id =
+      _wire_delete_paper_by_idPtr.asFunction<void Function(int, int)>();
+
+  void wire_set_is_fav_by_id(
+    int port_,
+    int i,
+    int is_fav,
+  ) {
+    return _wire_set_is_fav_by_id(
+      port_,
+      i,
+      is_fav,
+    );
+  }
+
+  late final _wire_set_is_fav_by_idPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Int64, ffi.Int64)>>('wire_set_is_fav_by_id');
+  late final _wire_set_is_fav_by_id =
+      _wire_set_is_fav_by_idPtr.asFunction<void Function(int, int, int)>();
+
+  ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
+    int len,
+  ) {
+    return _new_uint_8_list_0(
+      len,
+    );
+  }
+
+  late final _new_uint_8_list_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_uint_8_list> Function(
+              ffi.Int32)>>('new_uint_8_list_0');
+  late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
+      .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -197,6 +505,13 @@ class NativeWire implements FlutterRustBridgeWireBase {
 }
 
 class _Dart_Handle extends ffi.Opaque {}
+
+class wire_uint_8_list extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;

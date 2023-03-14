@@ -9,7 +9,13 @@ crate-type = ["lib","staticlib","cdylib",]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.66"
 flutter_rust_bridge = "= 1.62.1"
+futures = "0.3"
+lazy_static = "1.4.0"
+sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "sqlite","chrono" ] }
+rust-crypto = "0.2.36"
+tokio = { version = "1.25.0", features = ["full"] }
 wallpaper = { version = "3", features = ["from_url"] }
 
 [build-dependencies]
