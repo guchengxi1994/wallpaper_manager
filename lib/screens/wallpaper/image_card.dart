@@ -138,6 +138,9 @@ class ImageCard extends StatelessWidget {
                               color: Colors.red,
                             ),
                     ),
+                    const SizedBox(
+                      width: 5,
+                    ),
                     InkWell(
                       onTap: () async {
                         await api.setWallPaper(s: paper.filePath);

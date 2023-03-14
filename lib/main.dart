@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wallpaper_manager/routers.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:tray_manager/tray_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +18,45 @@ void main() async {
       center: false,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
-      // titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
     });
+
+    await trayManager.setIcon(
+      Platform.isWindows
+          ? 'asset/icons/tray_icon.ico'
+          : 'asset/icons/tray_icon.png',
+    );
+    List<MenuItem> items = [
+      MenuItem(
+        key: 'show_window',
+        label: 'Show Window',
+        onClick: (menuItem) async {
+          await windowManager.maximize();
+        },
+      ),
+      MenuItem.separator(),
+      MenuItem(
+        key: 'hide_window',
+        label: 'Hide Window',
+        onClick: (menuItem) async {
+          await windowManager.minimize();
+        },
+      ),
+      MenuItem.separator(),
+      MenuItem(
+        key: 'exit_app',
+        label: 'Exit App',
+        onClick: (menuItem) async {
+          await trayManager.destroy();
+          exit(0);
+        },
+      ),
+    ];
+
+    await trayManager.setContextMenu(Menu(items: items));
   }
   runApp(const MyApp());
 }
