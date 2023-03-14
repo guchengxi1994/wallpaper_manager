@@ -36,6 +36,16 @@ pub extern "C" fn wire_set_is_fav_by_id(port_: i64, i: i64, is_fav: i64) {
     wire_set_is_fav_by_id_impl(port_, i, is_fav)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_get_current_wall_paper(port_: i64) {
+    wire_get_current_wall_paper_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_set_wall_paper(port_: i64, s: *mut wire_uint_8_list) {
+    wire_set_wall_paper_impl(port_, s)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

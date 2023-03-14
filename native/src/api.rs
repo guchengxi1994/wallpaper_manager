@@ -46,3 +46,27 @@ pub fn delete_paper_by_id(i: i64) -> i64 {
 pub fn set_is_fav_by_id(i: i64, is_fav: i64) -> i64 {
     block_on(async { WallPaper::set_fav_by_id(i, is_fav) })
 }
+
+pub fn get_current_wall_paper() -> String {
+    let f = wallpaper::get();
+    match f {
+        Ok(f0) => {
+            return f0;
+        }
+        Err(_) => {
+            return String::new();
+        }
+    }
+}
+
+pub fn set_wall_paper(s: String) -> i64 {
+    let r = wallpaper::set_from_path(s.as_str());
+    match r {
+        Ok(_) => {
+            return 0;
+        }
+        Err(_) => {
+            return -1;
+        }
+    }
+}

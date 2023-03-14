@@ -2,7 +2,7 @@ name: wallpaper_manager
 description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: '>=2.19.3 <3.0.0'
@@ -12,6 +12,9 @@ dependencies:
   desktop_drop: ^0.4.1
   extended_image: ^7.0.2
   ffi: ^2.0.1
+  file_type: 
+    git: 
+      url: https://github.com/guchengxi1994/file_type
   flutter_smart_dialog: ^4.9.0+3
   flutter_rust_bridge: ^1.62.1
   flutter:

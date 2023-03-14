@@ -1,8 +1,11 @@
+// ignore_for_file: unnecessary_cast
+
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
+import 'add_one_image_card.dart';
 import 'image_card.dart';
 
 class WallpaperManagerScreen extends StatefulWidget {
@@ -42,8 +45,9 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen> {
                       .images
                       .map((e) => ImageCard(
                             paper: e,
-                          ))
-                      .toList(),
+                          ) as Widget)
+                      .toList()
+                    ..add(const AddOneImageCard()),
                 )),
           ),
         );

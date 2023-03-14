@@ -36,6 +36,16 @@ pub fn wire_set_is_fav_by_id(port_: MessagePort, i: i64, is_fav: i64) {
     wire_set_is_fav_by_id_impl(port_, i, is_fav)
 }
 
+#[wasm_bindgen]
+pub fn wire_get_current_wall_paper(port_: MessagePort) {
+    wire_get_current_wall_paper_impl(port_)
+}
+
+#[wasm_bindgen]
+pub fn wire_set_wall_paper(port_: MessagePort, s: String) {
+    wire_set_wall_paper_impl(port_, s)
+}
+
 // Section: allocate functions
 
 // Section: related functions

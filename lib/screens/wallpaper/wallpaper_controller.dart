@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
+import 'package:file_type/match.dart' as m;
 
 class WallpaperController extends ChangeNotifier {
   List<WallPaper> images = [];
@@ -40,7 +41,32 @@ class WallpaperController extends ChangeNotifier {
     }
   }
 
+  final m.Match match = m.Match();
+
   Future addNewImage(String s) async {
+    final matcher = await match.match(s);
+    if (matcher == null) {
+      SmartDialog.showToast("无法判断文件类型");
+      return;
+    }
+
+    if (![
+      'jpg',
+      'jpx',
+      'apng',
+      'png',
+      'gif',
+      'webp',
+      'cr2',
+      'tiff',
+      'bmp',
+      'jxr',
+      'psd'
+    ].contains(matcher.extension)) {
+      SmartDialog.showToast("不是图片类型");
+      return;
+    }
+
     final result = await api.newPaper(s: s);
     if (result == 1) {
       SmartDialog.showToast("已存在相同文件");

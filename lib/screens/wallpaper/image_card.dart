@@ -5,6 +5,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:provider/provider.dart';
+import 'package:wallpaper_manager/app_style.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
 import '../../bridge/native.dart';
@@ -12,8 +13,6 @@ import '../../bridge/native.dart';
 class ImageCard extends StatelessWidget {
   const ImageCard({super.key, required this.paper});
   final WallPaper paper;
-  static const double width = 393;
-  static const double height = 300;
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +27,8 @@ class ImageCard extends StatelessWidget {
     return Card(
       elevation: 4,
       child: SizedBox(
-        width: width,
-        height: height,
+        width: AppStyle.cardWidth,
+        height: AppStyle.cardHeight,
         child: Stack(
           children: [
             ExtendedImage.file(
@@ -42,8 +41,8 @@ class ImageCard extends StatelessWidget {
                     );
                   case LoadState.completed:
                     return ExtendedRawImage(
-                      width: width,
-                      height: height,
+                      width: AppStyle.cardWidth,
+                      height: AppStyle.cardHeight,
                       image: state.extendedImageInfo?.image,
                       fit: BoxFit.fitWidth,
                     );
@@ -65,8 +64,8 @@ class ImageCard extends StatelessWidget {
     return Card(
       elevation: 10,
       child: SizedBox(
-        width: width,
-        height: height,
+        width: AppStyle.cardWidth,
+        height: AppStyle.cardHeight,
         child: Stack(
           children: [
             ExtendedImage.file(
@@ -79,8 +78,8 @@ class ImageCard extends StatelessWidget {
                     );
                   case LoadState.completed:
                     return ExtendedRawImage(
-                      width: width,
-                      height: height,
+                      width: AppStyle.cardWidth,
+                      height: AppStyle.cardHeight,
                       image: state.extendedImageInfo?.image,
                       fit: BoxFit.fitWidth,
                     );
@@ -138,7 +137,16 @@ class ImageCard extends StatelessWidget {
                               Icons.favorite_border,
                               color: Colors.red,
                             ),
-                    )
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        await api.setWallPaper(s: paper.filePath);
+                      },
+                      child: const Icon(
+                        Icons.wallpaper,
+                        color: Colors.red,
+                      ),
+                    ),
                   ],
                 ))
           ],

@@ -37,6 +37,14 @@ abstract class Native {
   Future<int> setIsFavById({required int i, required int isFav, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetIsFavByIdConstMeta;
+
+  Future<String> getCurrentWallPaper({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetCurrentWallPaperConstMeta;
+
+  Future<int> setWallPaper({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetWallPaperConstMeta;
 }
 
 class WallPaper {
@@ -182,6 +190,39 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "set_is_fav_by_id",
         argNames: ["i", "isFav"],
+      );
+
+  Future<String> getCurrentWallPaper({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_current_wall_paper(port_),
+      parseSuccessData: _wire2api_String,
+      constMeta: kGetCurrentWallPaperConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetCurrentWallPaperConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_current_wall_paper",
+        argNames: [],
+      );
+
+  Future<int> setWallPaper({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_set_wall_paper(port_, arg0),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kSetWallPaperConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetWallPaperConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_wall_paper",
+        argNames: ["s"],
       );
 
   void dispose() {
@@ -473,6 +514,37 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Int64, ffi.Int64)>>('wire_set_is_fav_by_id');
   late final _wire_set_is_fav_by_id =
       _wire_set_is_fav_by_idPtr.asFunction<void Function(int, int, int)>();
+
+  void wire_get_current_wall_paper(
+    int port_,
+  ) {
+    return _wire_get_current_wall_paper(
+      port_,
+    );
+  }
+
+  late final _wire_get_current_wall_paperPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_current_wall_paper');
+  late final _wire_get_current_wall_paper =
+      _wire_get_current_wall_paperPtr.asFunction<void Function(int)>();
+
+  void wire_set_wall_paper(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_set_wall_paper(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_set_wall_paperPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_set_wall_paper');
+  late final _wire_set_wall_paper = _wire_set_wall_paperPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
