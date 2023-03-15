@@ -18,6 +18,14 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kInitDbConstMeta;
 
+  Future<ScreenParams> getScreenSize({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetScreenSizeConstMeta;
+
+  Future<void> createAllDirectory({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateAllDirectoryConstMeta;
+
   Future<int> newPaper({required String s, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kNewPaperConstMeta;
@@ -45,6 +53,16 @@ abstract class Native {
   Future<int> setWallPaper({required String s, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetWallPaperConstMeta;
+}
+
+class ScreenParams {
+  final int width;
+  final int height;
+
+  ScreenParams({
+    required this.width,
+    required this.height,
+  });
 }
 
 class WallPaper {
@@ -104,6 +122,40 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_db",
         argNames: [],
+      );
+
+  Future<ScreenParams> getScreenSize({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_screen_size(port_),
+      parseSuccessData: _wire2api_screen_params,
+      constMeta: kGetScreenSizeConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetScreenSizeConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_screen_size",
+        argNames: [],
+      );
+
+  Future<void> createAllDirectory({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_create_all_directory(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kCreateAllDirectoryConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCreateAllDirectoryConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_all_directory",
+        argNames: ["s"],
       );
 
   Future<int> newPaper({required String s, dynamic hint}) {
@@ -238,6 +290,10 @@ class NativeImpl implements Native {
     return _wire2api_wall_paper(raw);
   }
 
+  int _wire2api_i32(dynamic raw) {
+    return raw as int;
+  }
+
   int _wire2api_i64(dynamic raw) {
     return castInt(raw);
   }
@@ -248,6 +304,16 @@ class NativeImpl implements Native {
 
   WallPaper? _wire2api_opt_box_autoadd_wall_paper(dynamic raw) {
     return raw == null ? null : _wire2api_box_autoadd_wall_paper(raw);
+  }
+
+  ScreenParams _wire2api_screen_params(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScreenParams(
+      width: _wire2api_i32(arr[0]),
+      height: _wire2api_i32(arr[1]),
+    );
   }
 
   int _wire2api_u8(dynamic raw) {
@@ -432,6 +498,37 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_init_dbPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_init_db');
   late final _wire_init_db = _wire_init_dbPtr.asFunction<void Function(int)>();
+
+  void wire_get_screen_size(
+    int port_,
+  ) {
+    return _wire_get_screen_size(
+      port_,
+    );
+  }
+
+  late final _wire_get_screen_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_screen_size');
+  late final _wire_get_screen_size =
+      _wire_get_screen_sizePtr.asFunction<void Function(int)>();
+
+  void wire_create_all_directory(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_create_all_directory(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_create_all_directoryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_create_all_directory');
+  late final _wire_create_all_directory = _wire_create_all_directoryPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_new_paper(
     int port_,

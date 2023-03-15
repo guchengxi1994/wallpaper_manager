@@ -1,6 +1,7 @@
-use futures::executor::block_on;
-
 use crate::db::model::WallPaper;
+use crate::storage;
+use crate::utils::ScreenParams;
+use futures::executor::block_on;
 
 pub fn rust_bridge_say_hello() -> String {
     String::from("hello from rust")
@@ -16,6 +17,14 @@ pub fn init_db() {
             println!("初始化数据库失败")
         }
     }
+}
+
+pub fn get_screen_size() -> ScreenParams {
+    crate::utils::get_screen_size()
+}
+
+pub fn create_all_directory(s: String) {
+    storage::create_cache_dir(s.clone());
 }
 
 pub fn new_paper(s: String) -> i64 {

@@ -43,6 +43,11 @@ class WallpaperController extends ChangeNotifier {
 
   final m.Match match = m.Match();
 
+  Future<String> getFileType(String s) async {
+    final matcher = await match.match(s);
+    return matcher?.extension ?? "";
+  }
+
   Future addNewImage(String s) async {
     final matcher = await match.match(s);
     if (matcher == null) {

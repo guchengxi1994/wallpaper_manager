@@ -1,8 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:wallpaper_manager/routers.dart';
+import 'package:wallpaper_manager/utils.dart';
 
 import '../../bridge/native.dart';
 
@@ -55,6 +58,8 @@ class _SplashBodyState extends State<SplashBody> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      Directory executableDir = DevUtils.executableDir;
+      await api.createAllDirectory(s: executableDir.path);
       await api.initDb();
 
       Navigator.of(context).pushReplacement(PageRouteBuilder(

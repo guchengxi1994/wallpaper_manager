@@ -12,6 +12,16 @@ pub fn wire_init_db(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
+pub fn wire_get_screen_size(port_: MessagePort) {
+    wire_get_screen_size_impl(port_)
+}
+
+#[wasm_bindgen]
+pub fn wire_create_all_directory(port_: MessagePort, s: String) {
+    wire_create_all_directory_impl(port_, s)
+}
+
+#[wasm_bindgen]
 pub fn wire_new_paper(port_: MessagePort, s: String) {
     wire_new_paper_impl(port_, s)
 }

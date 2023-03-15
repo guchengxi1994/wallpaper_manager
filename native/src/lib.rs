@@ -2,4 +2,5 @@ mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not
 pub mod api;
 mod tests;
 pub mod db;
-
+pub mod storage;
+pub mod utils;

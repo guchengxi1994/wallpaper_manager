@@ -30,6 +30,10 @@ void wire_rust_bridge_say_hello(int64_t port_);
 
 void wire_init_db(int64_t port_);
 
+void wire_get_screen_size(int64_t port_);
+
+void wire_create_all_directory(int64_t port_, struct wire_uint_8_list *s);
+
 void wire_new_paper(int64_t port_, struct wire_uint_8_list *s);
 
 void wire_get_all_papers(int64_t port_);
@@ -52,6 +56,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_rust_bridge_say_hello);
     dummy_var ^= ((int64_t) (void*) wire_init_db);
+    dummy_var ^= ((int64_t) (void*) wire_get_screen_size);
+    dummy_var ^= ((int64_t) (void*) wire_create_all_directory);
     dummy_var ^= ((int64_t) (void*) wire_new_paper);
     dummy_var ^= ((int64_t) (void*) wire_get_all_papers);
     dummy_var ^= ((int64_t) (void*) wire_get_paper_by_id);

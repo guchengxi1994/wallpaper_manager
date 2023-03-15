@@ -18,5 +18,8 @@ rust-crypto = "0.2.36"
 tokio = { version = "1.25.0", features = ["full"] }
 wallpaper = { version = "3", features = ["from_url"] }
 
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
+
 [build-dependencies]
 flutter_rust_bridge_codegen = "= 1.62.1"

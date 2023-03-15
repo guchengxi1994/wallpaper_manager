@@ -20,6 +20,7 @@ use std::sync::Arc;
 // Section: imports
 
 use crate::db::model::WallPaper;
+use crate::utils::ScreenParams;
 
 // Section: wire functions
 
@@ -41,6 +42,29 @@ fn wire_init_db_impl(port_: MessagePort) {
             mode: FfiCallMode::Normal,
         },
         move || move |task_callback| Ok(init_db()),
+    )
+}
+fn wire_get_screen_size_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_screen_size",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_screen_size()),
+    )
+}
+fn wire_create_all_directory_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_all_directory",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| Ok(create_all_directory(api_s))
+        },
     )
 }
 fn wire_new_paper_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
@@ -168,6 +192,13 @@ impl Wire2Api<u8> for u8 {
 }
 
 // Section: impl IntoDart
+
+impl support::IntoDart for ScreenParams {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.width.into_dart(), self.height.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for ScreenParams {}
 
 impl support::IntoDart for WallPaper {
     fn into_dart(self) -> support::DartAbi {

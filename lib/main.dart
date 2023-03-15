@@ -15,8 +15,7 @@ void main() async {
       minimumSize: Size(1280, 720),
       maximumSize: Size(1280, 720),
       center: false,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
+      // backgroundColor: Colors.transparent,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
