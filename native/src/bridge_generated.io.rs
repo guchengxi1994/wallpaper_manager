@@ -32,6 +32,11 @@ pub extern "C" fn wire_get_all_papers(port_: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_get_all_items(port_: i64) {
+    wire_get_all_items_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_get_paper_by_id(port_: i64, i: i64) {
     wire_get_paper_by_id_impl(port_, i)
 }
@@ -54,6 +59,21 @@ pub extern "C" fn wire_get_current_wall_paper(port_: i64) {
 #[no_mangle]
 pub extern "C" fn wire_set_wall_paper(port_: i64, s: *mut wire_uint_8_list) {
     wire_set_wall_paper_impl(port_, s)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_set_json_path(port_: i64, s: *mut wire_uint_8_list) {
+    wire_set_json_path_impl(port_, s)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_set_gallery_id(port_: i64, id: i64) {
+    wire_set_gallery_id_impl(port_, id)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_create_new_gallery(port_: i64, s: *mut wire_uint_8_list) {
+    wire_create_new_gallery_impl(port_, s)
 }
 
 // Section: allocate functions

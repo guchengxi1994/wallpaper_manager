@@ -6,8 +6,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'dart:ffi' as ffi;
+
+part 'bridge_generated.freezed.dart';
 
 abstract class Native {
   Future<String> rustBridgeSayHello({dynamic hint});
@@ -34,6 +37,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kGetAllPapersConstMeta;
 
+  Future<List<GalleryOrWallpaper>> getAllItems({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetAllItemsConstMeta;
+
   Future<WallPaper?> getPaperById({required int i, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetPaperByIdConstMeta;
@@ -53,6 +60,40 @@ abstract class Native {
   Future<int> setWallPaper({required String s, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetWallPaperConstMeta;
+
+  Future<void> setJsonPath({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetJsonPathConstMeta;
+
+  Future<void> setGalleryId({required int id, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetGalleryIdConstMeta;
+
+  Future<int> createNewGallery({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateNewGalleryConstMeta;
+}
+
+class Gallery {
+  final int galleryId;
+  final int createAt;
+  final int isDeleted;
+
+  Gallery({
+    required this.galleryId,
+    required this.createAt,
+    required this.isDeleted,
+  });
+}
+
+@freezed
+class GalleryOrWallpaper with _$GalleryOrWallpaper {
+  const factory GalleryOrWallpaper.gallery(
+    Gallery field0,
+  ) = GalleryOrWallpaper_Gallery;
+  const factory GalleryOrWallpaper.wallPaper(
+    WallPaper field0,
+  ) = GalleryOrWallpaper_WallPaper;
 }
 
 class ScreenParams {
@@ -191,6 +232,22 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Future<List<GalleryOrWallpaper>> getAllItems({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_all_items(port_),
+      parseSuccessData: _wire2api_list_gallery_or_wallpaper,
+      constMeta: kGetAllItemsConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetAllItemsConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_all_items",
+        argNames: [],
+      );
+
   Future<WallPaper?> getPaperById({required int i, dynamic hint}) {
     var arg0 = _platform.api2wire_i64(i);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -277,6 +334,57 @@ class NativeImpl implements Native {
         argNames: ["s"],
       );
 
+  Future<void> setJsonPath({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_set_json_path(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kSetJsonPathConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetJsonPathConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_json_path",
+        argNames: ["s"],
+      );
+
+  Future<void> setGalleryId({required int id, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(id);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_set_gallery_id(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kSetGalleryIdConstMeta,
+      argValues: [id],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetGalleryIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_gallery_id",
+        argNames: ["id"],
+      );
+
+  Future<int> createNewGallery({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_create_new_gallery(port_, arg0),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kCreateNewGalleryConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCreateNewGalleryConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_new_gallery",
+        argNames: ["s"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -286,8 +394,38 @@ class NativeImpl implements Native {
     return raw as String;
   }
 
+  Gallery _wire2api_box_autoadd_gallery(dynamic raw) {
+    return _wire2api_gallery(raw);
+  }
+
   WallPaper _wire2api_box_autoadd_wall_paper(dynamic raw) {
     return _wire2api_wall_paper(raw);
+  }
+
+  Gallery _wire2api_gallery(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return Gallery(
+      galleryId: _wire2api_i64(arr[0]),
+      createAt: _wire2api_i64(arr[1]),
+      isDeleted: _wire2api_i64(arr[2]),
+    );
+  }
+
+  GalleryOrWallpaper _wire2api_gallery_or_wallpaper(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return GalleryOrWallpaper_Gallery(
+          _wire2api_box_autoadd_gallery(raw[1]),
+        );
+      case 1:
+        return GalleryOrWallpaper_WallPaper(
+          _wire2api_box_autoadd_wall_paper(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   int _wire2api_i32(dynamic raw) {
@@ -296,6 +434,10 @@ class NativeImpl implements Native {
 
   int _wire2api_i64(dynamic raw) {
     return castInt(raw);
+  }
+
+  List<GalleryOrWallpaper> _wire2api_list_gallery_or_wallpaper(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_gallery_or_wallpaper).toList();
   }
 
   List<WallPaper> _wire2api_list_wall_paper(dynamic raw) {
@@ -561,6 +703,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_get_all_papers =
       _wire_get_all_papersPtr.asFunction<void Function(int)>();
 
+  void wire_get_all_items(
+    int port_,
+  ) {
+    return _wire_get_all_items(
+      port_,
+    );
+  }
+
+  late final _wire_get_all_itemsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_all_items');
+  late final _wire_get_all_items =
+      _wire_get_all_itemsPtr.asFunction<void Function(int)>();
+
   void wire_get_paper_by_id(
     int port_,
     int i,
@@ -641,6 +797,56 @@ class NativeWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(ffi.Int64,
               ffi.Pointer<wire_uint_8_list>)>>('wire_set_wall_paper');
   late final _wire_set_wall_paper = _wire_set_wall_paperPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_set_json_path(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_set_json_path(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_set_json_pathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_set_json_path');
+  late final _wire_set_json_path = _wire_set_json_pathPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_set_gallery_id(
+    int port_,
+    int id,
+  ) {
+    return _wire_set_gallery_id(
+      port_,
+      id,
+    );
+  }
+
+  late final _wire_set_gallery_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_set_gallery_id');
+  late final _wire_set_gallery_id =
+      _wire_set_gallery_idPtr.asFunction<void Function(int, int)>();
+
+  void wire_create_new_gallery(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_create_new_gallery(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_create_new_galleryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_create_new_gallery');
+  late final _wire_create_new_gallery = _wire_create_new_galleryPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(

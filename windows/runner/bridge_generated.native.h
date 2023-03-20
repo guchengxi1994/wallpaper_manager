@@ -38,6 +38,8 @@ void wire_new_paper(int64_t port_, struct wire_uint_8_list *s);
 
 void wire_get_all_papers(int64_t port_);
 
+void wire_get_all_items(int64_t port_);
+
 void wire_get_paper_by_id(int64_t port_, int64_t i);
 
 void wire_delete_paper_by_id(int64_t port_, int64_t i);
@@ -47,6 +49,12 @@ void wire_set_is_fav_by_id(int64_t port_, int64_t i, int64_t is_fav);
 void wire_get_current_wall_paper(int64_t port_);
 
 void wire_set_wall_paper(int64_t port_, struct wire_uint_8_list *s);
+
+void wire_set_json_path(int64_t port_, struct wire_uint_8_list *s);
+
+void wire_set_gallery_id(int64_t port_, int64_t id);
+
+void wire_create_new_gallery(int64_t port_, struct wire_uint_8_list *s);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -60,11 +68,15 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_create_all_directory);
     dummy_var ^= ((int64_t) (void*) wire_new_paper);
     dummy_var ^= ((int64_t) (void*) wire_get_all_papers);
+    dummy_var ^= ((int64_t) (void*) wire_get_all_items);
     dummy_var ^= ((int64_t) (void*) wire_get_paper_by_id);
     dummy_var ^= ((int64_t) (void*) wire_delete_paper_by_id);
     dummy_var ^= ((int64_t) (void*) wire_set_is_fav_by_id);
     dummy_var ^= ((int64_t) (void*) wire_get_current_wall_paper);
     dummy_var ^= ((int64_t) (void*) wire_set_wall_paper);
+    dummy_var ^= ((int64_t) (void*) wire_set_json_path);
+    dummy_var ^= ((int64_t) (void*) wire_set_gallery_id);
+    dummy_var ^= ((int64_t) (void*) wire_create_new_gallery);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

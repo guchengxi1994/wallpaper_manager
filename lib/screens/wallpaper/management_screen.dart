@@ -7,6 +7,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
 import 'add_one_image_card.dart';
+import 'gallary_card.dart';
 import 'image_card.dart';
 
 class WallpaperManagerScreen extends StatefulWidget {
@@ -60,18 +61,25 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                 child: Wrap(
                   runSpacing: 10,
                   spacing: 10,
-                  children: ctx
-                      .watch<WallpaperController>()
-                      .images
-                      .map((e) => ImageCard(
-                            paper: e,
-                          ) as Widget)
-                      .toList()
-                    ..add(const AddOneImageCard()),
+                  children: _buildContent(ctx),
                 )),
           ),
         );
       },
     );
+  }
+
+  List<Widget> _buildContent(BuildContext ctx) {
+    final children = ctx.watch<WallpaperController>().images;
+    final result = <Widget>[];
+    for (final i in children) {
+      i.map(gallery: (c) {
+        result.add(const GallaryCard());
+      }, wallPaper: (w) {
+        result.add(ImageCard(paper: w.field0));
+      });
+    }
+    result.add(const AddOneImageCard());
+    return result;
   }
 }

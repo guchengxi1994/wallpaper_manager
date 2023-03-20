@@ -1,4 +1,4 @@
-use crate::db::model::WallPaper;
+use crate::db::model::{WallPaper, GLOBAL_GALLERY_ID, JSON_PATH, Gallery,GalleryOrWallpaper};
 use crate::storage;
 use crate::utils::ScreenParams;
 use futures::executor::block_on;
@@ -13,7 +13,8 @@ pub fn init_db() {
         Ok(_) => {
             println!("初始化数据库成功")
         }
-        Err(_) => {
+        Err(e) => {
+            println!("[rust-init-db-err] : {:?}", e);
             println!("初始化数据库失败")
         }
     }
@@ -40,8 +41,13 @@ pub fn new_paper(s: String) -> i64 {
     }
 }
 
+#[deprecated="use `get_all_items` instead"]
 pub fn get_all_papers() -> Vec<WallPaper> {
     block_on(async { WallPaper::get_papers() })
+}
+
+pub fn get_all_items() -> Vec<GalleryOrWallpaper> {
+    Gallery::get_children()
 }
 
 pub fn get_paper_by_id(i: i64) -> Option<WallPaper> {
@@ -78,4 +84,28 @@ pub fn set_wall_paper(s: String) -> i64 {
             return -1;
         }
     }
+}
+
+// 设置 json 路径
+pub fn set_json_path(s: String) {
+    block_on(async {
+        if !crate::db::init::path_exists(s.clone()) {
+            let _ = std::fs::File::create(s.clone());
+        }
+        let mut _s = JSON_PATH.lock().await;
+        *_s = s;
+    })
+}
+
+// 修改当前 gallery_id
+pub fn set_gallery_id(id: i64) {
+    block_on(async {
+        let mut _s = GLOBAL_GALLERY_ID.lock().await;
+        *_s = id;
+    })
+}
+
+// 新建 gallery
+pub fn create_new_gallery(s:String)->i64{
+    Gallery::new_gallery(s)
 }

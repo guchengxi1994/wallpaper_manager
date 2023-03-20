@@ -19,6 +19,8 @@ use std::sync::Arc;
 
 // Section: imports
 
+use crate::db::model::Gallery;
+use crate::db::model::GalleryOrWallpaper;
 use crate::db::model::WallPaper;
 use crate::utils::ScreenParams;
 
@@ -90,6 +92,16 @@ fn wire_get_all_papers_impl(port_: MessagePort) {
         move || move |task_callback| Ok(get_all_papers()),
     )
 }
+fn wire_get_all_items_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_all_items",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_all_items()),
+    )
+}
 fn wire_get_paper_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -157,6 +169,45 @@ fn wire_set_wall_paper_impl(port_: MessagePort, s: impl Wire2Api<String> + Unwin
         },
     )
 }
+fn wire_set_json_path_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "set_json_path",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| Ok(set_json_path(api_s))
+        },
+    )
+}
+fn wire_set_gallery_id_impl(port_: MessagePort, id: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "set_gallery_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_id = id.wire2api();
+            move |task_callback| Ok(set_gallery_id(api_id))
+        },
+    )
+}
+fn wire_create_new_gallery_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_new_gallery",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| Ok(create_new_gallery(api_s))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -192,6 +243,29 @@ impl Wire2Api<u8> for u8 {
 }
 
 // Section: impl IntoDart
+
+impl support::IntoDart for Gallery {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.gallery_id.into_dart(),
+            self.create_at.into_dart(),
+            self.is_deleted.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Gallery {}
+
+impl support::IntoDart for GalleryOrWallpaper {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Gallery(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::WallPaper(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for GalleryOrWallpaper {}
 
 impl support::IntoDart for ScreenParams {
     fn into_dart(self) -> support::DartAbi {
