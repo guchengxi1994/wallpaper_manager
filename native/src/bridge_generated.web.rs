@@ -76,6 +76,11 @@ pub fn wire_create_new_gallery(port_: MessagePort, s: String) {
     wire_create_new_gallery_impl(port_, s)
 }
 
+#[wasm_bindgen]
+pub fn wire_get_parent_id(port_: MessagePort) {
+    wire_get_parent_id_impl(port_)
+}
+
 // Section: allocate functions
 
 // Section: related functions

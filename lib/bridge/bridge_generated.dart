@@ -72,17 +72,23 @@ abstract class Native {
   Future<int> createNewGallery({required String s, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateNewGalleryConstMeta;
+
+  Future<int> getParentId({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetParentIdConstMeta;
 }
 
 class Gallery {
   final int galleryId;
   final int createAt;
   final int isDeleted;
+  final String galleryName;
 
   Gallery({
     required this.galleryId,
     required this.createAt,
     required this.isDeleted,
+    required this.galleryName,
   });
 }
 
@@ -385,6 +391,22 @@ class NativeImpl implements Native {
         argNames: ["s"],
       );
 
+  Future<int> getParentId({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_parent_id(port_),
+      parseSuccessData: _wire2api_i64,
+      constMeta: kGetParentIdConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetParentIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_parent_id",
+        argNames: [],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -404,12 +426,13 @@ class NativeImpl implements Native {
 
   Gallery _wire2api_gallery(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return Gallery(
       galleryId: _wire2api_i64(arr[0]),
       createAt: _wire2api_i64(arr[1]),
       isDeleted: _wire2api_i64(arr[2]),
+      galleryName: _wire2api_String(arr[3]),
     );
   }
 
@@ -848,6 +871,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_create_new_gallery');
   late final _wire_create_new_gallery = _wire_create_new_galleryPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_parent_id(
+    int port_,
+  ) {
+    return _wire_get_parent_id(
+      port_,
+    );
+  }
+
+  late final _wire_get_parent_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_parent_id');
+  late final _wire_get_parent_id =
+      _wire_get_parent_idPtr.asFunction<void Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

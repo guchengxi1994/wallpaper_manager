@@ -208,6 +208,16 @@ fn wire_create_new_gallery_impl(port_: MessagePort, s: impl Wire2Api<String> + U
         },
     )
 }
+fn wire_get_parent_id_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_parent_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_parent_id()),
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -250,6 +260,7 @@ impl support::IntoDart for Gallery {
             self.gallery_id.into_dart(),
             self.create_at.into_dart(),
             self.is_deleted.into_dart(),
+            self.gallery_name.into_dart(),
         ]
         .into_dart()
     }

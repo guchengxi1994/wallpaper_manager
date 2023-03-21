@@ -56,6 +56,8 @@ void wire_set_gallery_id(int64_t port_, int64_t id);
 
 void wire_create_new_gallery(int64_t port_, struct wire_uint_8_list *s);
 
+void wire_get_parent_id(int64_t port_);
+
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
 void free_WireSyncReturn(WireSyncReturn ptr);
@@ -77,6 +79,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_set_json_path);
     dummy_var ^= ((int64_t) (void*) wire_set_gallery_id);
     dummy_var ^= ((int64_t) (void*) wire_create_new_gallery);
+    dummy_var ^= ((int64_t) (void*) wire_get_parent_id);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

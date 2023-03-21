@@ -21,6 +21,13 @@ lazy_static! {
     };
 }
 
+pub async fn get_parent_id()->i64{
+    let current_folder_id = *GLOBAL_GALLERY_ID.lock().await;
+    let folder = &*FOLDER_STATE.lock().await;
+
+    return folder.get_parent_id(current_folder_id);
+}
+
 #[derive(Clone, Debug, sqlx::FromRow)]
 pub struct WallPaper {
     pub wall_paper_id: i64,
@@ -200,6 +207,7 @@ pub struct Gallery {
     pub gallery_id: i64,
     pub create_at: i64,
     pub is_deleted: i64,
+    pub gallery_name:String
 }
 
 pub enum GalleryOrWallpaper {

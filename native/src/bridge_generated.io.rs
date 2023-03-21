@@ -76,6 +76,11 @@ pub extern "C" fn wire_create_new_gallery(port_: i64, s: *mut wire_uint_8_list) 
     wire_create_new_gallery_impl(port_, s)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_get_parent_id(port_: i64) {
+    wire_get_parent_id_impl(port_)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

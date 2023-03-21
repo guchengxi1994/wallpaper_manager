@@ -1,4 +1,4 @@
-use crate::db::model::{WallPaper, GLOBAL_GALLERY_ID, JSON_PATH, Gallery,GalleryOrWallpaper};
+use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH};
 use crate::storage;
 use crate::utils::ScreenParams;
 use futures::executor::block_on;
@@ -41,7 +41,7 @@ pub fn new_paper(s: String) -> i64 {
     }
 }
 
-#[deprecated="use `get_all_items` instead"]
+#[deprecated = "use `get_all_items` instead"]
 pub fn get_all_papers() -> Vec<WallPaper> {
     block_on(async { WallPaper::get_papers() })
 }
@@ -106,6 +106,11 @@ pub fn set_gallery_id(id: i64) {
 }
 
 // 新建 gallery
-pub fn create_new_gallery(s:String)->i64{
+pub fn create_new_gallery(s: String) -> i64 {
     Gallery::new_gallery(s)
+}
+
+// 获取当前parent_id
+pub fn get_parent_id() -> i64 {
+    block_on(async { crate::db::model::get_parent_id().await })
 }
