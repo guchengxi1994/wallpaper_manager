@@ -57,6 +57,13 @@ class AddDialog extends StatefulWidget {
 class _AddDialogState extends State<AddDialog> {
   final TextEditingController controller = TextEditingController();
 
+  final String newFolder = "新建Gallery";
+  final String newFile = "导入图片";
+  late String groupString = newFolder;
+
+  late double folderHeight = 150;
+  late double fileHeight = 400;
+
   @override
   void dispose() {
     controller.dispose();
@@ -65,31 +72,111 @@ class _AddDialogState extends State<AddDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // print(groupString);
     return Container(
+      // padding: const EdgeInsets.all(10),
       width: 500,
-      height: 400,
+      height: groupString == newFolder ? folderHeight : fileHeight,
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 300,
-            child: TextField(
-              controller: controller,
+          Container(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 193, 196, 198),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15))),
+            height: 30,
+            child: Row(
+              children: [
+                const Text("添加..."),
+                const Expanded(child: SizedBox()),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop("");
+                  },
+                  child: const Icon(Icons.close),
+                )
+              ],
             ),
           ),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop("");
-              },
-              child: Text("取消")),
-          TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop(controller.text);
-              },
-              child: Text("确定"))
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              const SizedBox(
+                width: 20,
+              ),
+              Radio<String>(
+                value: newFolder,
+                groupValue: groupString,
+                onChanged: (value) {
+                  setState(() {
+                    groupString = value!;
+                  });
+                },
+              ),
+              Text(newFolder),
+              const SizedBox(
+                width: 30,
+              ),
+              Radio<String>(
+                value: newFile,
+                groupValue: groupString,
+                onChanged: (value) {
+                  setState(() {
+                    groupString = value!;
+                  });
+                },
+              ),
+              Text(newFile),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              const SizedBox(
+                width: 25,
+              ),
+              Container(
+                padding: padding,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 218, 223, 229)),
+                    borderRadius: BorderRadius.circular(5)),
+                width: 160,
+                height: 27,
+                child: TextField(
+                  style: const TextStyle(fontSize: 12),
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    hintText: "输入Gallery名",
+                    border: InputBorder.none,
+                  ),
+                ),
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(controller.text);
+                  },
+                  child: const Text("确定")),
+            ],
+          )
         ],
       ),
     );
   }
+
+  final padding = const EdgeInsets.only(left: 5, bottom: 4);
 }
