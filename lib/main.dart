@@ -1,13 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/routers.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:wallpaper_manager/utils.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await api.setJsonPath(s: "${DevUtils.executableDir.path}/struct.json");
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(

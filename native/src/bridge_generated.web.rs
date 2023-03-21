@@ -32,6 +32,11 @@ pub fn wire_get_all_papers(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
+pub fn wire_get_all_items(port_: MessagePort) {
+    wire_get_all_items_impl(port_)
+}
+
+#[wasm_bindgen]
 pub fn wire_get_paper_by_id(port_: MessagePort, i: i64) {
     wire_get_paper_by_id_impl(port_, i)
 }
@@ -54,6 +59,26 @@ pub fn wire_get_current_wall_paper(port_: MessagePort) {
 #[wasm_bindgen]
 pub fn wire_set_wall_paper(port_: MessagePort, s: String) {
     wire_set_wall_paper_impl(port_, s)
+}
+
+#[wasm_bindgen]
+pub fn wire_set_json_path(port_: MessagePort, s: String) {
+    wire_set_json_path_impl(port_, s)
+}
+
+#[wasm_bindgen]
+pub fn wire_set_gallery_id(port_: MessagePort, id: i64) {
+    wire_set_gallery_id_impl(port_, id)
+}
+
+#[wasm_bindgen]
+pub fn wire_create_new_gallery(port_: MessagePort, s: String) {
+    wire_create_new_gallery_impl(port_, s)
+}
+
+#[wasm_bindgen]
+pub fn wire_get_parent_id(port_: MessagePort) {
+    wire_get_parent_id_impl(port_)
 }
 
 // Section: allocate functions

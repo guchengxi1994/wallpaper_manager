@@ -4,9 +4,10 @@ import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:file_type/match.dart' as m;
 
 class WallpaperController extends ChangeNotifier {
-  List<WallPaper> images = [];
+  List<GalleryOrWallpaper> images = [];
   init() async {
-    images = await api.getAllPapers();
+    images = await api.getAllItems();
+    // print(images.length);
     notifyListeners();
   }
 
@@ -15,7 +16,7 @@ class WallpaperController extends ChangeNotifier {
     if (r == -1) {
       SmartDialog.showToast("删除失败");
     } else {
-      images.remove(i);
+      images.remove(GalleryOrWallpaper.wallPaper(i));
       notifyListeners();
     }
   }
@@ -35,8 +36,8 @@ class WallpaperController extends ChangeNotifier {
           isDeleted: paper.isDeleted,
           isFav: 1 - paper.isFav);
 
-      final index = images.indexOf(paper);
-      images[index] = newPaper;
+      final index = images.indexOf(GalleryOrWallpaper.wallPaper(paper));
+      images[index] = GalleryOrWallpaper.wallPaper(newPaper);
       notifyListeners();
     }
   }
@@ -73,14 +74,14 @@ class WallpaperController extends ChangeNotifier {
     }
 
     final result = await api.newPaper(s: s);
-    if (result == 1) {
+    if (result == 0) {
       SmartDialog.showToast("已存在相同文件");
     } else if (result == -1) {
       SmartDialog.showToast("添加失败");
     } else {
       WallPaper? p = await api.getPaperById(i: result);
       if (p != null) {
-        images.add(p);
+        images.add(GalleryOrWallpaper.wallPaper(p));
         notifyListeners();
       }
     }
