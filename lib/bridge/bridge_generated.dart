@@ -65,6 +65,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kSetJsonPathConstMeta;
 
+  Future<void> setDbPath({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetDbPathConstMeta;
+
   Future<void> setGalleryId({required int id, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetGalleryIdConstMeta;
@@ -354,6 +358,23 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kSetJsonPathConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "set_json_path",
+        argNames: ["s"],
+      );
+
+  Future<void> setDbPath({required String s, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(s);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_set_db_path(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kSetDbPathConstMeta,
+      argValues: [s],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetDbPathConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_db_path",
         argNames: ["s"],
       );
 
@@ -837,6 +858,23 @@ class NativeWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_set_json_path');
   late final _wire_set_json_path = _wire_set_json_pathPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_set_db_path(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_set_db_path(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_set_db_pathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_set_db_path');
+  late final _wire_set_db_path = _wire_set_db_pathPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_set_gallery_id(

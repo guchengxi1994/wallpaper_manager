@@ -39,16 +39,23 @@ class GallaryCard extends StatelessWidget {
                 right: 0,
                 child: ClipRect(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                    filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
                     child: Container(
                       // the size where the blurring starts
-                      height: 50,
+                      height: 30,
                       color: Colors.transparent,
                     ),
                   ),
                 ),
               ),
-              Positioned(bottom: 5, child: Text(gallery.galleryName))
+              Positioned(
+                  left: 5,
+                  bottom: 5,
+                  child: Text(
+                    gallery.galleryName,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ))
             ],
           ),
         ),

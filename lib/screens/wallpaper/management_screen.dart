@@ -52,7 +52,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
           floatingActionButton: Container(
             padding: const EdgeInsets.only(left: 5, right: 5),
             width: 300,
-            height: 50,
+            height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               boxShadow: const [
@@ -62,26 +62,6 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
             ),
             child: Row(
               children: [
-                // InkWell(
-                //   highlightColor: Colors.white,
-                //   borderRadius: const BorderRadius.only(
-                //       topLeft: Radius.circular(20),
-                //       bottomLeft: Radius.circular(20)),
-                //   onTap: () async {
-                //     final s = await api.getParentId();
-                //     debugPrint(s.toString());
-                //     if (s != -1) {
-                //       await api.setGalleryId(id: s);
-                //       ctx.read<WallpaperController>().init();
-                //     }
-                //   },
-                //   child: const SizedBox(
-                //     width: 30,
-                //     child: Center(
-                //       child: Icon(Icons.chevron_left),
-                //     ),
-                //   ),
-                // )
                 HoverWidget(
                   hoverChild: GestureDetector(
                     onTap: () async {

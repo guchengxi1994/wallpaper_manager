@@ -182,6 +182,19 @@ fn wire_set_json_path_impl(port_: MessagePort, s: impl Wire2Api<String> + Unwind
         },
     )
 }
+fn wire_set_db_path_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "set_db_path",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| Ok(set_db_path(api_s))
+        },
+    )
+}
 fn wire_set_gallery_id_impl(port_: MessagePort, id: impl Wire2Api<i64> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

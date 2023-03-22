@@ -67,6 +67,11 @@ pub extern "C" fn wire_set_json_path(port_: i64, s: *mut wire_uint_8_list) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_set_db_path(port_: i64, s: *mut wire_uint_8_list) {
+    wire_set_db_path_impl(port_, s)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_set_gallery_id(port_: i64, id: i64) {
     wire_set_gallery_id_impl(port_, id)
 }
