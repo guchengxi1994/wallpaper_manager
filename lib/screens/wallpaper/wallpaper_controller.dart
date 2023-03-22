@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
-import 'package:file_type/match.dart' as m;
+import 'package:wallpaper_manager/utils.dart';
 
 class WallpaperController extends ChangeNotifier {
   List<GalleryOrWallpaper> images = [];
@@ -42,15 +42,13 @@ class WallpaperController extends ChangeNotifier {
     }
   }
 
-  final m.Match match = m.Match();
-
   Future<String> getFileType(String s) async {
-    final matcher = await match.match(s);
+    final matcher = await DevUtils.match.match(s);
     return matcher?.extension ?? "";
   }
 
   Future addNewImage(String s) async {
-    final matcher = await match.match(s);
+    final matcher = await DevUtils.match.match(s);
     if (matcher == null) {
       SmartDialog.showToast("无法判断文件类型");
       return;

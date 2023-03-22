@@ -15,6 +15,7 @@ dependencies:
   file_type: 
     git: 
       url: https://github.com/guchengxi1994/file_type
+  file_picker: ^5.2.6
   flutter_smart_dialog: ^4.9.0+3
   flutter_rust_bridge: 1.62.1
   flutter:
