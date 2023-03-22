@@ -67,6 +67,11 @@ pub fn wire_set_json_path(port_: MessagePort, s: String) {
 }
 
 #[wasm_bindgen]
+pub fn wire_set_db_path(port_: MessagePort, s: String) {
+    wire_set_db_path_impl(port_, s)
+}
+
+#[wasm_bindgen]
 pub fn wire_set_gallery_id(port_: MessagePort, id: i64) {
     wire_set_gallery_id_impl(port_, id)
 }

@@ -15,6 +15,16 @@ impl MyPool {
     pub fn get_pool(&self) -> &Pool<Sqlite> {
         self.0.as_ref().unwrap()
     }
+
+    #[deprecated="BUG"]
+    pub async fn pool_close(&self){
+        match &self.0 {
+            Some(c) => {
+                c.close().await;
+            },
+            None => {},
+        }
+    }
 }
 
 /// 实现 Default trait

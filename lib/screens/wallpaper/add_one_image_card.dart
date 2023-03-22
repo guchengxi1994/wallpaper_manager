@@ -16,21 +16,33 @@ class AddOneImageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        final s = await showGeneralDialog(
+        DialogResponse? s = await showGeneralDialog(
             context: context,
             pageBuilder: (c, f, s) {
               return const Center(
                 child: AddDialog(),
               );
             });
-        debugPrint(s.toString());
-        if (s != "") {
-          final res = await api.createNewGallery(s: s.toString());
+        // debugPrint(s.toString());
+        if (s == null) {
+          return;
+        }
+        if (s.type == "gallery" && s.name != "") {
+          final res = await api.createNewGallery(s: s.name.toString());
           if (res != 0 || res != -1) {
             await context.read<WallpaperController>().init();
           } else {
             debugPrint(res.toString());
           }
+          return;
+        }
+
+        if (s.type == "file" && s.name != "") {
+          if (s.imageType == "file") {
+            await context.read<WallpaperController>().addNewImage(s.name);
+            // await context.read<WallpaperController>().init();
+          }
+          return;
         }
       },
       child: const Card(
@@ -101,7 +113,7 @@ class _AddDialogState extends State<AddDialog> {
                 const Expanded(child: SizedBox()),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pop("");
+                    Navigator.of(context).pop(null);
                   },
                   child: const Icon(Icons.close),
                 )
@@ -176,7 +188,15 @@ class _AddDialogState extends State<AddDialog> {
             children: [
               TextButton(
                   onPressed: () async {
-                    Navigator.of(context).pop(controller.text);
+                    DialogResponse response = DialogResponse(
+                        name: groupString == newFolder
+                            ? controller.text
+                            : fromNotifier.value == url
+                                ? controller2.text
+                                : selectedFileName,
+                        type: groupString == newFolder ? "gallery" : "file",
+                        imageType: fromNotifier.value == url ? "url" : "file");
+                    Navigator.of(context).pop(response);
                   },
                   child: const Text("确定")),
             ],
@@ -315,4 +335,12 @@ class _AddDialogState extends State<AddDialog> {
       ),
     );
   }
+}
+
+class DialogResponse {
+  final String name;
+  final String type;
+  final String imageType;
+  DialogResponse(
+      {required this.name, required this.type, required this.imageType});
 }

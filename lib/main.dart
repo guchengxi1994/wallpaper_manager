@@ -11,6 +11,7 @@ import 'package:tray_manager/tray_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await api.setJsonPath(s: "${DevUtils.executableDir.path}/struct.json");
+  await api.setDbPath(s: "${DevUtils.executableDir.path}/data.db");
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();

@@ -1,3 +1,4 @@
+use crate::db::init::DB_PATH;
 use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH};
 use crate::storage;
 use crate::utils::ScreenParams;
@@ -35,7 +36,7 @@ pub fn new_paper(s: String) -> i64 {
             return r0;
         }
         Err(e) => {
-            println!("[rust error] : {:?}", e);
+            println!("[rust error new paper] : {:?}", e);
             return -1;
         }
     }
@@ -55,7 +56,16 @@ pub fn get_paper_by_id(i: i64) -> Option<WallPaper> {
 }
 
 pub fn delete_paper_by_id(i: i64) -> i64 {
-    block_on(async { WallPaper::delete_paper_by_id(i) })
+    let r = WallPaper::delete_paper_by_id(i);
+    match r {
+        Ok(_) => {
+            return 0;
+        }
+        Err(e) => {
+            println!("[rust-delete-file-error]:{:?}", e);
+            return -1;
+        }
+    }
 }
 
 pub fn set_is_fav_by_id(i: i64, is_fav: i64) -> i64 {
@@ -92,7 +102,15 @@ pub fn set_json_path(s: String) {
         if !crate::db::init::path_exists(s.clone()) {
             let _ = std::fs::File::create(s.clone());
         }
-        let mut _s = JSON_PATH.lock().await;
+        let mut _s = JSON_PATH.lock().unwrap();
+        *_s = s;
+    })
+}
+
+// 设置 db 路径
+pub fn set_db_path(s: String) {
+    block_on(async {
+        let mut _s = DB_PATH.lock().unwrap();
         *_s = s;
     })
 }
@@ -100,7 +118,7 @@ pub fn set_json_path(s: String) {
 // 修改当前 gallery_id
 pub fn set_gallery_id(id: i64) {
     block_on(async {
-        let mut _s = GLOBAL_GALLERY_ID.lock().await;
+        let mut _s = GLOBAL_GALLERY_ID.lock().unwrap();
         *_s = id;
     })
 }
