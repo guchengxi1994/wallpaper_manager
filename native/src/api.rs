@@ -132,3 +132,25 @@ pub fn create_new_gallery(s: String) -> i64 {
 pub fn get_parent_id() -> i64 {
     block_on(async { crate::db::model::get_parent_id().await })
 }
+
+// 删除 gallery
+pub fn delete_gallery_directly_by_id(i: i64) {
+    let r = Gallery::delete_gallery_by_id_directly(i);
+    match r {
+        Ok(_) => {}
+        Err(e) => {
+            println!("[rust-delete-folder-error] : {:?}", e);
+        }
+    }
+}
+
+// 删除 gallery
+pub fn delete_gallery_keep_children_by_id(i: i64) {
+    let r = Gallery::delete_gallery_by_id_keep_children(i);
+    match r {
+        Ok(_) => {}
+        Err(e) => {
+            println!("[rust-delete-folder-error] : {:?}", e);
+        }
+    }
+}

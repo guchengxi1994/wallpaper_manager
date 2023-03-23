@@ -86,6 +86,16 @@ pub fn wire_get_parent_id(port_: MessagePort) {
     wire_get_parent_id_impl(port_)
 }
 
+#[wasm_bindgen]
+pub fn wire_delete_gallery_directly_by_id(port_: MessagePort, i: i64) {
+    wire_delete_gallery_directly_by_id_impl(port_, i)
+}
+
+#[wasm_bindgen]
+pub fn wire_delete_gallery_keep_children_by_id(port_: MessagePort, i: i64) {
+    wire_delete_gallery_keep_children_by_id_impl(port_, i)
+}
+
 // Section: allocate functions
 
 // Section: related functions

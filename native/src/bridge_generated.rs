@@ -231,6 +231,35 @@ fn wire_get_parent_id_impl(port_: MessagePort) {
         move || move |task_callback| Ok(get_parent_id()),
     )
 }
+fn wire_delete_gallery_directly_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "delete_gallery_directly_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(delete_gallery_directly_by_id(api_i))
+        },
+    )
+}
+fn wire_delete_gallery_keep_children_by_id_impl(
+    port_: MessagePort,
+    i: impl Wire2Api<i64> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "delete_gallery_keep_children_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(delete_gallery_keep_children_by_id(api_i))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

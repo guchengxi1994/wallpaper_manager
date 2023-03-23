@@ -80,6 +80,14 @@ abstract class Native {
   Future<int> getParentId({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetParentIdConstMeta;
+
+  Future<void> deleteGalleryDirectlyById({required int i, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDeleteGalleryDirectlyByIdConstMeta;
+
+  Future<void> deleteGalleryKeepChildrenById({required int i, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDeleteGalleryKeepChildrenByIdConstMeta;
 }
 
 class Gallery {
@@ -426,6 +434,42 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "get_parent_id",
         argNames: [],
+      );
+
+  Future<void> deleteGalleryDirectlyById({required int i, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_delete_gallery_directly_by_id(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kDeleteGalleryDirectlyByIdConstMeta,
+      argValues: [i],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDeleteGalleryDirectlyByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "delete_gallery_directly_by_id",
+        argNames: ["i"],
+      );
+
+  Future<void> deleteGalleryKeepChildrenById({required int i, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_delete_gallery_keep_children_by_id(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kDeleteGalleryKeepChildrenByIdConstMeta,
+      argValues: [i],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDeleteGalleryKeepChildrenByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "delete_gallery_keep_children_by_id",
+        argNames: ["i"],
       );
 
   void dispose() {
@@ -923,6 +967,40 @@ class NativeWire implements FlutterRustBridgeWireBase {
           'wire_get_parent_id');
   late final _wire_get_parent_id =
       _wire_get_parent_idPtr.asFunction<void Function(int)>();
+
+  void wire_delete_gallery_directly_by_id(
+    int port_,
+    int i,
+  ) {
+    return _wire_delete_gallery_directly_by_id(
+      port_,
+      i,
+    );
+  }
+
+  late final _wire_delete_gallery_directly_by_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_delete_gallery_directly_by_id');
+  late final _wire_delete_gallery_directly_by_id =
+      _wire_delete_gallery_directly_by_idPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire_delete_gallery_keep_children_by_id(
+    int port_,
+    int i,
+  ) {
+    return _wire_delete_gallery_keep_children_by_id(
+      port_,
+      i,
+    );
+  }
+
+  late final _wire_delete_gallery_keep_children_by_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_delete_gallery_keep_children_by_id');
+  late final _wire_delete_gallery_keep_children_by_id =
+      _wire_delete_gallery_keep_children_by_idPtr
+          .asFunction<void Function(int, int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

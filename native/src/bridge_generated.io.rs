@@ -86,6 +86,16 @@ pub extern "C" fn wire_get_parent_id(port_: i64) {
     wire_get_parent_id_impl(port_)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_delete_gallery_directly_by_id(port_: i64, i: i64) {
+    wire_delete_gallery_directly_by_id_impl(port_, i)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_delete_gallery_keep_children_by_id(port_: i64, i: i64) {
+    wire_delete_gallery_keep_children_by_id_impl(port_, i)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

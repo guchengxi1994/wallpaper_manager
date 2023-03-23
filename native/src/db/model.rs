@@ -256,6 +256,77 @@ pub enum GalleryOrWallpaper {
 }
 
 impl Gallery {
+    /// 直接删除，不保留子文件数据
+    pub fn delete_gallery_by_id_directly(i: i64) -> anyhow::Result<()> {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let pool = crate::db::connection::POOL.write().await;
+            let _ = sqlx::query(r#"UPDATE gallery SET is_deleted = 1 where gallery_id = ?"#)
+                .bind(i)
+                .execute(pool.get_pool())
+                .await?;
+            let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
+
+            println!("[rust-folder-should-be-deleted-id] {:?}", i);
+
+            let children = FOLDER_STATE.lock().unwrap().get_children(i);
+
+            // Folder::add_a_folder_to_current_folder();
+            FOLDER_STATE.lock().unwrap().remove_a_folder_from_current_folder_directly(
+                current_folder_id,
+                rs_filemanager::model::folder::Folder {
+                    children,
+                    name: String::new(),
+                    parent_id: Some(current_folder_id),
+                    folder_id: i,
+                },
+            );
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .to_file(JSON_PATH.lock().unwrap().to_string());
+
+
+            anyhow::Ok(())
+        })
+    }
+
+
+     /// 删除，保留子文件数据
+     pub fn delete_gallery_by_id_keep_children(i: i64) -> anyhow::Result<()> {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let pool = crate::db::connection::POOL.write().await;
+            let _ = sqlx::query(r#"UPDATE gallery SET is_deleted = 1 where gallery_id = ?"#)
+                .bind(i)
+                .execute(pool.get_pool())
+                .await?;
+            let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
+
+            println!("[rust-folder-should-be-deleted-id] {:?}", i);
+
+            let children = FOLDER_STATE.lock().unwrap().get_children(i);
+
+            // Folder::add_a_folder_to_current_folder();
+            FOLDER_STATE.lock().unwrap().remove_a_folder_from_current_folder_keep_children(
+                current_folder_id,
+                rs_filemanager::model::folder::Folder {
+                    children,
+                    name: String::new(),
+                    parent_id: Some(current_folder_id),
+                    folder_id: i,
+                },
+            );
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .to_file(JSON_PATH.lock().unwrap().to_string());
+
+
+            anyhow::Ok(())
+        })
+    }
+
     pub async fn from_folder(folder: Folder, pool: &Pool<Sqlite>) -> Option<Gallery> {
         // let pool = crate::db::connection::POOL.read().await;
         let _sql = sqlx::query_as::<sqlx::Sqlite, Gallery>(
