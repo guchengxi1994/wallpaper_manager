@@ -96,6 +96,15 @@ pub extern "C" fn wire_delete_gallery_keep_children_by_id(port_: i64, i: i64) {
     wire_delete_gallery_keep_children_by_id_impl(port_, i)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_download_file(
+    port_: i64,
+    url: *mut wire_uint_8_list,
+    save_path: *mut wire_uint_8_list,
+) {
+    wire_download_file_impl(port_, url, save_path)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

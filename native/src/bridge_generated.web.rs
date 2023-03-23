@@ -96,6 +96,11 @@ pub fn wire_delete_gallery_keep_children_by_id(port_: MessagePort, i: i64) {
     wire_delete_gallery_keep_children_by_id_impl(port_, i)
 }
 
+#[wasm_bindgen]
+pub fn wire_download_file(port_: MessagePort, url: String, save_path: String) {
+    wire_download_file_impl(port_, url, save_path)
+}
+
 // Section: allocate functions
 
 // Section: related functions

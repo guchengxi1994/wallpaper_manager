@@ -154,3 +154,15 @@ pub fn delete_gallery_keep_children_by_id(i: i64) {
         }
     }
 }
+
+pub fn download_file(url: String, save_path: String) -> String {
+    match crate::utils::download_file(url, save_path) {
+        Ok(o) => {
+            return o;
+        }
+        Err(e) => {
+            println!("[rust-download-error]:{:?}", e);
+            return String::new();
+        }
+    }
+}

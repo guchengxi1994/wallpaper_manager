@@ -260,6 +260,24 @@ fn wire_delete_gallery_keep_children_by_id_impl(
         },
     )
 }
+fn wire_download_file_impl(
+    port_: MessagePort,
+    url: impl Wire2Api<String> + UnwindSafe,
+    save_path: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "download_file",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_url = url.wire2api();
+            let api_save_path = save_path.wire2api();
+            move |task_callback| Ok(download_file(api_url, api_save_path))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

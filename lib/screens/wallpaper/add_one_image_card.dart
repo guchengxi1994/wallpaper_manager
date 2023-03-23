@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:wallpaper_manager/app_style.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
+import 'package:wallpaper_manager/utils.dart';
 
 class AddOneImageCard extends StatelessWidget {
   const AddOneImageCard({super.key});
@@ -23,7 +24,7 @@ class AddOneImageCard extends StatelessWidget {
                 child: AddDialog(),
               );
             });
-        // debugPrint(s.toString());
+        debugPrint(s.toString());
         if (s == null) {
           return;
         }
@@ -40,9 +41,21 @@ class AddOneImageCard extends StatelessWidget {
         if (s.type == "file" && s.name != "") {
           if (s.imageType == "file") {
             await context.read<WallpaperController>().addNewImage(s.name);
-            // await context.read<WallpaperController>().init();
+            return;
           }
-          return;
+        }
+
+        if (s.type == "file" && s.name != "") {
+          if (s.imageType == "url") {
+            debugPrint("[flutter] down load ${s.name}");
+            // 下载文件到cache文件夹
+            final r = await api.downloadFile(
+                url: s.name, savePath: "${DevUtils.executableDir.path}/cache");
+            if (r != "") {
+              await context.read<WallpaperController>().addNewImage(r);
+            }
+            return;
+          }
         }
       },
       child: const Card(
@@ -175,6 +188,7 @@ class _AddDialogState extends State<AddDialog> {
                       style: const TextStyle(fontSize: 14),
                       controller: controller,
                       decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.only(bottom: 15),
                         hintText: "输入Gallery名",
                         border: InputBorder.none,
                       ),
@@ -318,9 +332,12 @@ class _AddDialogState extends State<AddDialog> {
                               width: 260,
                               height: 30,
                               child: TextField(
+                                maxLines: 1,
+                                minLines: 1,
                                 style: const TextStyle(fontSize: 14),
                                 controller: controller2,
                                 decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.only(bottom: 15),
                                   hintText: "输入Url",
                                   border: InputBorder.none,
                                 ),
@@ -343,4 +360,9 @@ class DialogResponse {
   final String imageType;
   DialogResponse(
       {required this.name, required this.type, required this.imageType});
+
+  @override
+  String toString() {
+    return "name:$name  type:$type  imageType:$imageType";
+  }
 }

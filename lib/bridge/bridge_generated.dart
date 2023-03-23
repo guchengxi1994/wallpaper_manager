@@ -88,6 +88,11 @@ abstract class Native {
   Future<void> deleteGalleryKeepChildrenById({required int i, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kDeleteGalleryKeepChildrenByIdConstMeta;
+
+  Future<String> downloadFile(
+      {required String url, required String savePath, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDownloadFileConstMeta;
 }
 
 class Gallery {
@@ -470,6 +475,25 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "delete_gallery_keep_children_by_id",
         argNames: ["i"],
+      );
+
+  Future<String> downloadFile(
+      {required String url, required String savePath, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(url);
+    var arg1 = _platform.api2wire_String(savePath);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_download_file(port_, arg0, arg1),
+      parseSuccessData: _wire2api_String,
+      constMeta: kDownloadFileConstMeta,
+      argValues: [url, savePath],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDownloadFileConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "download_file",
+        argNames: ["url", "savePath"],
       );
 
   void dispose() {
@@ -1001,6 +1025,26 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_delete_gallery_keep_children_by_id =
       _wire_delete_gallery_keep_children_by_idPtr
           .asFunction<void Function(int, int)>();
+
+  void wire_download_file(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> url,
+    ffi.Pointer<wire_uint_8_list> save_path,
+  ) {
+    return _wire_download_file(
+      port_,
+      url,
+      save_path,
+    );
+  }
+
+  late final _wire_download_filePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_download_file');
+  late final _wire_download_file = _wire_download_filePtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
