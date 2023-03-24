@@ -93,6 +93,11 @@ abstract class Native {
       {required String url, required String savePath, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kDownloadFileConstMeta;
+
+  Future<List<GalleryOrWallpaper>> getChildrenById(
+      {required int i, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetChildrenByIdConstMeta;
 }
 
 class Gallery {
@@ -494,6 +499,24 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "download_file",
         argNames: ["url", "savePath"],
+      );
+
+  Future<List<GalleryOrWallpaper>> getChildrenById(
+      {required int i, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(i);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_children_by_id(port_, arg0),
+      parseSuccessData: _wire2api_list_gallery_or_wallpaper,
+      constMeta: kGetChildrenByIdConstMeta,
+      argValues: [i],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetChildrenByIdConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_children_by_id",
+        argNames: ["i"],
       );
 
   void dispose() {
@@ -1045,6 +1068,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_download_file = _wire_download_filePtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_children_by_id(
+    int port_,
+    int i,
+  ) {
+    return _wire_get_children_by_id(
+      port_,
+      i,
+    );
+  }
+
+  late final _wire_get_children_by_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'wire_get_children_by_id');
+  late final _wire_get_children_by_id =
+      _wire_get_children_by_idPtr.asFunction<void Function(int, int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

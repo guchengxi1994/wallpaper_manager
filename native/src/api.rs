@@ -1,5 +1,5 @@
 use crate::db::init::DB_PATH;
-use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH};
+use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH,FOLDER_STATE};
 use crate::storage;
 use crate::utils::ScreenParams;
 use futures::executor::block_on;
@@ -166,3 +166,38 @@ pub fn download_file(url: String, save_path: String) -> String {
         }
     }
 }
+
+pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async {
+        let folder = &*FOLDER_STATE.lock().unwrap();
+        let folder_or_files = folder.get_children(i);
+        let mut res: Vec<GalleryOrWallpaper> = Vec::new();
+        let pool = crate::db::connection::POOL.read().await;
+        let _p = pool.get_pool();
+    
+        for i in folder_or_files {
+            match i {
+                rs_filemanager::model::folder::FileOrFolder::File(file) => {
+                    match WallPaper::from_file(file, _p).await {
+                        Some(w) => {
+                            res.push(GalleryOrWallpaper::WallPaper(w));
+                        }
+                        None => {}
+                    }
+                }
+                rs_filemanager::model::folder::FileOrFolder::Folder(folder) => {
+                    match Gallery::from_folder(folder, _p).await {
+                        Some(w) => {
+                            res.push(GalleryOrWallpaper::Gallery(w));
+                        }
+                        None => {}
+                    }
+                }
+            }
+        }
+    
+        res
+    })  
+}
+

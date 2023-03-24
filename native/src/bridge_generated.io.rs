@@ -105,6 +105,11 @@ pub extern "C" fn wire_download_file(
     wire_download_file_impl(port_, url, save_path)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_get_children_by_id(port_: i64, i: i64) {
+    wire_get_children_by_id_impl(port_, i)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

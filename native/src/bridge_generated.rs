@@ -278,6 +278,19 @@ fn wire_download_file_impl(
         },
     )
 }
+fn wire_get_children_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_children_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(get_children_by_id(api_i))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

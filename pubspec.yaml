@@ -16,8 +16,9 @@ dependencies:
     git: 
       url: https://github.com/guchengxi1994/file_type
   file_picker: ^5.2.6
-  flutter_smart_dialog: ^4.9.0+3
+  flutter_fancy_tree_view: ^1.0.0
   flutter_rust_bridge: 1.62.1
+  flutter_smart_dialog: ^4.9.0+3
   flutter:
     sdk: flutter
   gif: ^2.2.0
