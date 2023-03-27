@@ -5,15 +5,17 @@ use rs_filemanager::model::folder::Folder;
 use sqlx::{Pool, Sqlite};
 use std::{
     fs,
-    time::{SystemTime, UNIX_EPOCH}, sync::Mutex,
+    sync::Mutex,
+    time::{SystemTime, UNIX_EPOCH},
 };
 use tokio::runtime::Runtime;
 
 lazy_static! {
     pub static ref JSON_PATH: Mutex<String> = Mutex::new(String::new());
     pub static ref FOLDER_STATE: Mutex<Folder> = {
-        let folder =
-            Folder::default_with_save_path(block_on(async { JSON_PATH.lock().unwrap() }).to_string());
+        let folder = Folder::default_with_save_path(
+            block_on(async { JSON_PATH.lock().unwrap() }).to_string(),
+        );
         Mutex::new(folder)
     };
     pub static ref GLOBAL_GALLERY_ID: Mutex<i64> = {
@@ -56,7 +58,6 @@ impl WallPaper {
 
             println!("[rust ] here get pool");
             {
-                
                 let _count: (i64,) = sqlx::query_as(
                     r#"SELECT COUNT(1) from wall_paper WHERE file_hash = ? and is_deleted = 0"#,
                 )
@@ -66,7 +67,7 @@ impl WallPaper {
                 if _count.0 > 0 {
                     return anyhow::Ok(0);
                 }
-    
+
                 println!("[rust ] get count done");
             }
 
@@ -79,11 +80,11 @@ impl WallPaper {
                 .bind(_t as i64)
                 .execute(_p)
                 .await?;
-    
+
                 println!("[rust ] insert done");
-    
+
                 let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
-    
+
                 FOLDER_STATE.lock().unwrap().add_a_file_to_current_folder(
                     current_folder_id,
                     rs_filemanager::model::file::File {
@@ -92,13 +93,13 @@ impl WallPaper {
                         file_id: _sql.last_insert_rowid(),
                     },
                 );
-    
+
                 FOLDER_STATE
                     .lock()
                     .unwrap()
                     .to_file(JSON_PATH.lock().unwrap().to_string());
                 anyhow::Ok(_sql.last_insert_rowid())
-            }       
+            }
         })
     }
 
@@ -139,22 +140,24 @@ impl WallPaper {
             // }
             let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
 
-            println!("[rust-should-be-deleted-id] {:?}",i);
+            println!("[rust-should-be-deleted-id] {:?}", i);
 
             // Folder::add_a_folder_to_current_folder();
-            FOLDER_STATE.lock().unwrap().remove_a_file_from_current_folder(
-                current_folder_id,
-                rs_filemanager::model::file::File {
-                    path: String::from(""),
-                    parent_id: current_folder_id,
-                    file_id: i,
-                },
-            );
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .remove_a_file_from_current_folder(
+                    current_folder_id,
+                    rs_filemanager::model::file::File {
+                        path: String::from(""),
+                        parent_id: current_folder_id,
+                        file_id: i,
+                    },
+                );
             FOLDER_STATE
                 .lock()
                 .unwrap()
                 .to_file(JSON_PATH.lock().unwrap().to_string());
-
 
             anyhow::Ok(())
         })
@@ -168,7 +171,7 @@ impl WallPaper {
             .bind(i)
             .execute(pool.get_pool())
             .await;
-        
+
         match _sql {
             Ok(_) => {
                 return 0;
@@ -189,7 +192,6 @@ impl WallPaper {
         .fetch_all(pool.get_pool())
         .await;
 
-
         match _sql {
             Ok(s) => {
                 return s;
@@ -200,7 +202,10 @@ impl WallPaper {
         }
     }
 
-    pub async fn from_file(f: rs_filemanager::model::file::File,pool:&Pool<Sqlite>) -> Option<WallPaper> {
+    pub async fn from_file(
+        f: rs_filemanager::model::file::File,
+        pool: &Pool<Sqlite>,
+    ) -> Option<WallPaper> {
         // let pool = crate::db::connection::POOL.read().await;
         let _sql = sqlx::query_as::<sqlx::Sqlite, WallPaper>(
             r#"SELECT * from wall_paper where is_deleted = 0 and wall_paper_id = ?"#,
@@ -208,7 +213,7 @@ impl WallPaper {
         .bind(f.file_id)
         .fetch_one(pool)
         .await;
-    
+
         match _sql {
             Ok(s) => {
                 return Some(s);
@@ -257,7 +262,118 @@ pub enum GalleryOrWallpaper {
 }
 
 impl Gallery {
-    pub async fn from_folder(folder: Folder,pool:&Pool<Sqlite>) -> Option<Gallery> {
+    /// 直接删除，不保留子文件数据
+    pub fn delete_gallery_by_id_directly(i: i64) -> anyhow::Result<()> {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let pool = crate::db::connection::POOL.write().await;
+            let _ = sqlx::query(r#"UPDATE gallery SET is_deleted = 1 where gallery_id = ?"#)
+                .bind(i)
+                .execute(pool.get_pool())
+                .await?;
+            let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
+
+            println!("[rust-folder-should-be-deleted-id] {:?}", i);
+
+            let children = FOLDER_STATE.lock().unwrap().get_children(i);
+
+            // Folder::add_a_folder_to_current_folder();
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .remove_a_folder_from_current_folder_directly(
+                    current_folder_id,
+                    rs_filemanager::model::folder::Folder {
+                        children,
+                        name: String::new(),
+                        parent_id: Some(current_folder_id),
+                        folder_id: i,
+                    },
+                );
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .to_file(JSON_PATH.lock().unwrap().to_string());
+
+            anyhow::Ok(())
+        })
+    }
+
+    pub fn move_item(to_id: i64, f: GalleryOrWallpaper) {
+        let mut current = FOLDER_STATE.lock().unwrap();
+        match f {
+            GalleryOrWallpaper::Gallery(g) => {
+                let parent_id = current.get_parent_id_by_item_id(true, g.gallery_id);
+
+                let fake_folder = rs_filemanager::model::folder::Folder {
+                    children: vec![],
+                    name: g.gallery_name,
+                    parent_id: Some(parent_id),
+                    folder_id: g.gallery_id,
+                };
+
+                current.move_item_to(
+                    to_id,
+                    rs_filemanager::model::folder::FileOrFolder::Folder(fake_folder),
+                );
+            }
+            GalleryOrWallpaper::WallPaper(w) => {
+                let parent_id = current.get_parent_id_by_item_id(false, w.wall_paper_id);
+
+                let fake_file = rs_filemanager::model::file::File {
+                    path: w.file_path,
+                    parent_id,
+                    file_id: w.wall_paper_id,
+                };
+
+                current.move_item_to(
+                    to_id,
+                    rs_filemanager::model::folder::FileOrFolder::File(fake_file),
+                );
+            }
+        }
+
+        current.to_file(JSON_PATH.lock().unwrap().to_string())
+    }
+
+    /// 删除，保留子文件数据
+    pub fn delete_gallery_by_id_keep_children(i: i64) -> anyhow::Result<()> {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let pool = crate::db::connection::POOL.write().await;
+            let _ = sqlx::query(r#"UPDATE gallery SET is_deleted = 1 where gallery_id = ?"#)
+                .bind(i)
+                .execute(pool.get_pool())
+                .await?;
+            let current_folder_id = *GLOBAL_GALLERY_ID.lock().unwrap();
+
+            println!("[rust-folder-should-be-deleted-id] {:?}", i);
+
+            let children = FOLDER_STATE.lock().unwrap().get_children(i);
+
+            // Folder::add_a_folder_to_current_folder();
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .remove_a_folder_from_current_folder_keep_children(
+                    current_folder_id,
+                    rs_filemanager::model::folder::Folder {
+                        children,
+                        name: String::new(),
+                        parent_id: Some(current_folder_id),
+                        folder_id: i,
+                    },
+                );
+            FOLDER_STATE
+                .lock()
+                .unwrap()
+                .to_file(JSON_PATH.lock().unwrap().to_string());
+
+            anyhow::Ok(())
+        })
+    }
+
+    pub async fn from_folder(folder: Folder, pool: &Pool<Sqlite>) -> Option<Gallery> {
         // let pool = crate::db::connection::POOL.read().await;
         let _sql = sqlx::query_as::<sqlx::Sqlite, Gallery>(
             r#"SELECT * from gallery where is_deleted = 0 and Gallery_id = ?"#,
@@ -290,7 +406,6 @@ impl Gallery {
             .bind(_t as i64)
             .execute(pool.get_pool())
             .await;
-
 
         match _sql {
             Ok(s) => {
@@ -326,64 +441,31 @@ impl Gallery {
             let folder_or_files = folder.get_children(*GLOBAL_GALLERY_ID.lock().unwrap());
             println!("[rust-vec-length] : {:?}", folder_or_files.len());
             let mut res: Vec<GalleryOrWallpaper> = Vec::new();
-            
+
             let pool = crate::db::connection::POOL.read().await;
             let _p = pool.get_pool();
 
-            
-                    for i in folder_or_files {
-                        match i {
-                            rs_filemanager::model::folder::FileOrFolder::File(file) => {
-                                // match WallPaper::from_file(file,_pool).await {
-                                //     Some(w) => {
-                                //         res.push(GalleryOrWallpaper::WallPaper(w));
-                                //     }
-                                //     None => {}
-                                // }
-                                let _sql = sqlx::query_as::<sqlx::Sqlite, WallPaper>(
-                                    r#"SELECT * from wall_paper where is_deleted = 0 and wall_paper_id = ?"#,
-                                )
-                                .bind(file.file_id)
-                                .fetch_one(_p)
-                                .await;
-                            
-                                match _sql {
-                                    Ok(s) => {
-                                        res.push(GalleryOrWallpaper::WallPaper(s));
-                                    }
-                                    Err(e) => {
-                                        println!("[rust-error-paper]:{:?}", e);
-                                        
-                                    }
-                                }
+            for i in folder_or_files {
+                match i {
+                    rs_filemanager::model::folder::FileOrFolder::File(file) => {
+                        match WallPaper::from_file(file, _p).await {
+                            Some(w) => {
+                                res.push(GalleryOrWallpaper::WallPaper(w));
                             }
-                            rs_filemanager::model::folder::FileOrFolder::Folder(folder) => {
-                                // match Gallery::from_folder(folder,_pool).await {
-                                //     Some(w) => {
-                                //         res.push(GalleryOrWallpaper::Gallery(w));
-                                //     }
-                                //     None => {}
-                                // }
-                                let _sql = sqlx::query_as::<sqlx::Sqlite, Gallery>(
-                                    r#"SELECT * from gallery where is_deleted = 0 and Gallery_id = ?"#,
-                                )
-                                .bind(folder.folder_id)
-                                .fetch_one(_p)
-                                .await;
-                        
-                                match _sql {
-                                    Ok(s) => {
-                                        // println!("{:?}",s.Gallery_id);
-                                        res.push(GalleryOrWallpaper::Gallery(s));
-                                    }
-                                    Err(e) => {
-                                        println!("[rust-error-gallery]:{:?}", e);
-                                    }
-                                }
-                            }
+                            None => {}
                         }
-                    }   
-                    res       
+                    }
+                    rs_filemanager::model::folder::FileOrFolder::Folder(folder) => {
+                        match Gallery::from_folder(folder, _p).await {
+                            Some(w) => {
+                                res.push(GalleryOrWallpaper::Gallery(w));
+                            }
+                            None => {}
+                        }
+                    }
+                }
+            }
+            res
         })
     }
 }

@@ -231,6 +231,84 @@ fn wire_get_parent_id_impl(port_: MessagePort) {
         move || move |task_callback| Ok(get_parent_id()),
     )
 }
+fn wire_delete_gallery_directly_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "delete_gallery_directly_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(delete_gallery_directly_by_id(api_i))
+        },
+    )
+}
+fn wire_delete_gallery_keep_children_by_id_impl(
+    port_: MessagePort,
+    i: impl Wire2Api<i64> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "delete_gallery_keep_children_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(delete_gallery_keep_children_by_id(api_i))
+        },
+    )
+}
+fn wire_download_file_impl(
+    port_: MessagePort,
+    url: impl Wire2Api<String> + UnwindSafe,
+    save_path: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "download_file",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_url = url.wire2api();
+            let api_save_path = save_path.wire2api();
+            move |task_callback| Ok(download_file(api_url, api_save_path))
+        },
+    )
+}
+fn wire_get_children_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_children_by_id",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_i = i.wire2api();
+            move |task_callback| Ok(get_children_by_id(api_i))
+        },
+    )
+}
+fn wire_move_item_impl(
+    port_: MessagePort,
+    to_id: impl Wire2Api<i64> + UnwindSafe,
+    f: impl Wire2Api<GalleryOrWallpaper> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "move_item",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_to_id = to_id.wire2api();
+            let api_f = f.wire2api();
+            move |task_callback| Ok(move_item(api_to_id, api_f))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

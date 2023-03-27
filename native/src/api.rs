@@ -1,5 +1,5 @@
 use crate::db::init::DB_PATH;
-use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH};
+use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH,FOLDER_STATE};
 use crate::storage;
 use crate::utils::ScreenParams;
 use futures::executor::block_on;
@@ -132,3 +132,77 @@ pub fn create_new_gallery(s: String) -> i64 {
 pub fn get_parent_id() -> i64 {
     block_on(async { crate::db::model::get_parent_id().await })
 }
+
+// 删除 gallery
+pub fn delete_gallery_directly_by_id(i: i64) {
+    let r = Gallery::delete_gallery_by_id_directly(i);
+    match r {
+        Ok(_) => {}
+        Err(e) => {
+            println!("[rust-delete-folder-error] : {:?}", e);
+        }
+    }
+}
+
+// 删除 gallery
+pub fn delete_gallery_keep_children_by_id(i: i64) {
+    let r = Gallery::delete_gallery_by_id_keep_children(i);
+    match r {
+        Ok(_) => {}
+        Err(e) => {
+            println!("[rust-delete-folder-error] : {:?}", e);
+        }
+    }
+}
+
+pub fn download_file(url: String, save_path: String) -> String {
+    match crate::utils::download_file(url, save_path) {
+        Ok(o) => {
+            return o;
+        }
+        Err(e) => {
+            println!("[rust-download-error]:{:?}", e);
+            return String::new();
+        }
+    }
+}
+
+pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async {
+        let folder = &*FOLDER_STATE.lock().unwrap();
+        let folder_or_files = folder.get_children(i);
+        let mut res: Vec<GalleryOrWallpaper> = Vec::new();
+        let pool = crate::db::connection::POOL.read().await;
+        let _p = pool.get_pool();
+    
+        for i in folder_or_files {
+            match i {
+                rs_filemanager::model::folder::FileOrFolder::File(file) => {
+                    match WallPaper::from_file(file, _p).await {
+                        Some(w) => {
+                            res.push(GalleryOrWallpaper::WallPaper(w));
+                        }
+                        None => {}
+                    }
+                }
+                rs_filemanager::model::folder::FileOrFolder::Folder(folder) => {
+                    match Gallery::from_folder(folder, _p).await {
+                        Some(w) => {
+                            res.push(GalleryOrWallpaper::Gallery(w));
+                        }
+                        None => {}
+                    }
+                }
+            }
+        }
+    
+        res
+    })  
+}
+
+// 移动
+pub fn move_item(to_id: i64, f: GalleryOrWallpaper){
+    Gallery::move_item(to_id, f)
+}
+

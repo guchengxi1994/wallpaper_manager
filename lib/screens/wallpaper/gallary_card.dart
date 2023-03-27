@@ -9,6 +9,8 @@ import 'package:wallpaper_manager/app_style.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
+import 'easy_button.dart';
+
 class GallaryCard extends StatelessWidget {
   const GallaryCard({super.key, required this.gallery});
   final Gallery gallery;
@@ -51,10 +53,40 @@ class GallaryCard extends StatelessWidget {
               Positioned(
                   left: 5,
                   bottom: 5,
-                  child: Text(
-                    gallery.galleryName,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: AppStyle.cardWidth - 60,
+                        child: Text(
+                          gallery.galleryName,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      EasyButton(
+                        onClick: () async {
+                          await api.deleteGalleryKeepChildrenById(
+                              i: gallery.galleryId);
+                          await context.read<WallpaperController>().init();
+                        },
+                        child: const Tooltip(
+                          message: "删除保留子文件",
+                          child: Icon(Icons.delete),
+                        ),
+                      ),
+                      EasyButton(
+                        onClick: () async {
+                          debugPrint("[flutter] delete folder");
+                          await api.deleteGalleryDirectlyById(
+                              i: gallery.galleryId);
+                          await context.read<WallpaperController>().init();
+                        },
+                        child: const Tooltip(
+                          message: "直接删除",
+                          child: Icon(Icons.delete_forever),
+                        ),
+                      )
+                    ],
                   ))
             ],
           ),

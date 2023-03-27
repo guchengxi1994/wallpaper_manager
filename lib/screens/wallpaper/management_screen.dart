@@ -8,6 +8,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
+import '../tree_view/lazy_tree_view.dart';
 import 'add_one_image_card.dart';
 import 'gallary_card.dart';
 import 'image_card.dart';
@@ -94,7 +95,74 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                       child: Icon(Icons.chevron_left),
                     ),
                   ),
-                )
+                ),
+                HoverWidget(
+                  hoverChild: GestureDetector(
+                    onTap: () async {
+                      final r = await showGeneralDialog(
+                          context: context,
+                          pageBuilder: (c, a1, a2) {
+                            return Center(
+                              child: Container(
+                                width: 500,
+                                height: 600,
+                                color: Colors.white,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      width: 500,
+                                      height: 500,
+                                      child: LazyTreeview(),
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: Text("退出")),
+                                    TextButton(
+                                        onPressed: () async {
+                                          // Navigator.of(context).pop();
+                                          await api.moveItem(
+                                              toId: 6,
+                                              f: ctx
+                                                  .read<WallpaperController>()
+                                                  .images[1]);
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: Text("测试移动"))
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
+
+                      if (r == true) {
+                        await ctx.read<WallpaperController>().init();
+                      }
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        width: 30,
+                        height: 30,
+                        child: const Center(
+                          child: Icon(Icons.tab),
+                        ),
+                      ),
+                    ),
+                  ),
+                  onHover: (event) {},
+                  child: const SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: Center(
+                      child: Icon(Icons.tab),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
