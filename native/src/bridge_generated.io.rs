@@ -110,7 +110,27 @@ pub extern "C" fn wire_get_children_by_id(port_: i64, i: i64) {
     wire_get_children_by_id_impl(port_, i)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_move_item(port_: i64, to_id: i64, f: *mut wire_GalleryOrWallpaper) {
+    wire_move_item_impl(port_, to_id, f)
+}
+
 // Section: allocate functions
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_gallery_0() -> *mut wire_Gallery {
+    support::new_leak_box_ptr(wire_Gallery::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_gallery_or_wallpaper_0() -> *mut wire_GalleryOrWallpaper {
+    support::new_leak_box_ptr(wire_GalleryOrWallpaper::new_with_null_ptr())
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_wall_paper_0() -> *mut wire_WallPaper {
+    support::new_leak_box_ptr(wire_WallPaper::new_with_null_ptr())
+}
 
 #[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
@@ -131,6 +151,51 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
+impl Wire2Api<Gallery> for *mut wire_Gallery {
+    fn wire2api(self) -> Gallery {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<Gallery>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<GalleryOrWallpaper> for *mut wire_GalleryOrWallpaper {
+    fn wire2api(self) -> GalleryOrWallpaper {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<GalleryOrWallpaper>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<WallPaper> for *mut wire_WallPaper {
+    fn wire2api(self) -> WallPaper {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<WallPaper>::wire2api(*wrap).into()
+    }
+}
+impl Wire2Api<Gallery> for wire_Gallery {
+    fn wire2api(self) -> Gallery {
+        Gallery {
+            gallery_id: self.gallery_id.wire2api(),
+            create_at: self.create_at.wire2api(),
+            is_deleted: self.is_deleted.wire2api(),
+            gallery_name: self.gallery_name.wire2api(),
+        }
+    }
+}
+impl Wire2Api<GalleryOrWallpaper> for wire_GalleryOrWallpaper {
+    fn wire2api(self) -> GalleryOrWallpaper {
+        match self.tag {
+            0 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.Gallery);
+                GalleryOrWallpaper::Gallery(ans.field0.wire2api())
+            },
+            1 => unsafe {
+                let ans = support::box_from_leak_ptr(self.kind);
+                let ans = support::box_from_leak_ptr(ans.WallPaper);
+                GalleryOrWallpaper::WallPaper(ans.field0.wire2api())
+            },
+            _ => unreachable!(),
+        }
+    }
+}
 
 impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     fn wire2api(self) -> Vec<u8> {
@@ -140,13 +205,70 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
         }
     }
 }
+impl Wire2Api<WallPaper> for wire_WallPaper {
+    fn wire2api(self) -> WallPaper {
+        WallPaper {
+            wall_paper_id: self.wall_paper_id.wire2api(),
+            file_path: self.file_path.wire2api(),
+            file_hash: self.file_hash.wire2api(),
+            create_at: self.create_at.wire2api(),
+            is_deleted: self.is_deleted.wire2api(),
+            is_fav: self.is_fav.wire2api(),
+        }
+    }
+}
 // Section: wire structs
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_Gallery {
+    gallery_id: i64,
+    create_at: i64,
+    is_deleted: i64,
+    gallery_name: *mut wire_uint_8_list,
+}
 
 #[repr(C)]
 #[derive(Clone)]
 pub struct wire_uint_8_list {
     ptr: *mut u8,
     len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_WallPaper {
+    wall_paper_id: i64,
+    file_path: *mut wire_uint_8_list,
+    file_hash: *mut wire_uint_8_list,
+    create_at: i64,
+    is_deleted: i64,
+    is_fav: i64,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_GalleryOrWallpaper {
+    tag: i32,
+    kind: *mut GalleryOrWallpaperKind,
+}
+
+#[repr(C)]
+pub union GalleryOrWallpaperKind {
+    Gallery: *mut wire_GalleryOrWallpaper_Gallery,
+    WallPaper: *mut wire_GalleryOrWallpaper_WallPaper,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_GalleryOrWallpaper_Gallery {
+    field0: *mut wire_Gallery,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_GalleryOrWallpaper_WallPaper {
+    field0: *mut wire_WallPaper,
 }
 
 // Section: impl NewWithNullPtr
@@ -158,6 +280,57 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
+    }
+}
+
+impl NewWithNullPtr for wire_Gallery {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            gallery_id: Default::default(),
+            create_at: Default::default(),
+            is_deleted: Default::default(),
+            gallery_name: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_GalleryOrWallpaper {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            tag: -1,
+            kind: core::ptr::null_mut(),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_GalleryOrWallpaper_Gallery() -> *mut GalleryOrWallpaperKind {
+    support::new_leak_box_ptr(GalleryOrWallpaperKind {
+        Gallery: support::new_leak_box_ptr(wire_GalleryOrWallpaper_Gallery {
+            field0: core::ptr::null_mut(),
+        }),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn inflate_GalleryOrWallpaper_WallPaper() -> *mut GalleryOrWallpaperKind {
+    support::new_leak_box_ptr(GalleryOrWallpaperKind {
+        WallPaper: support::new_leak_box_ptr(wire_GalleryOrWallpaper_WallPaper {
+            field0: core::ptr::null_mut(),
+        }),
+    })
+}
+
+impl NewWithNullPtr for wire_WallPaper {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            wall_paper_id: Default::default(),
+            file_path: core::ptr::null_mut(),
+            file_hash: core::ptr::null_mut(),
+            create_at: Default::default(),
+            is_deleted: Default::default(),
+            is_fav: Default::default(),
+        }
     }
 }
 

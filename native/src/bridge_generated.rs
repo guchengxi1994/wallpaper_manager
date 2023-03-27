@@ -291,6 +291,24 @@ fn wire_get_children_by_id_impl(port_: MessagePort, i: impl Wire2Api<i64> + Unwi
         },
     )
 }
+fn wire_move_item_impl(
+    port_: MessagePort,
+    to_id: impl Wire2Api<i64> + UnwindSafe,
+    f: impl Wire2Api<GalleryOrWallpaper> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "move_item",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_to_id = to_id.wire2api();
+            let api_f = f.wire2api();
+            move |task_callback| Ok(move_item(api_to_id, api_f))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

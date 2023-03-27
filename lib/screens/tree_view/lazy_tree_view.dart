@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fancy_tree_view/flutter_fancy_tree_view.dart';
+import 'package:provider/provider.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:path/path.dart' as path;
+import 'package:wallpaper_manager/screens/tree_view/tree_item_controller.dart';
 
 class LazyTreeview extends StatefulWidget {
   const LazyTreeview({super.key});
@@ -114,30 +116,57 @@ class _LazyTreeviewState extends State<LazyTreeview> {
   @override
   Widget build(BuildContext context) {
     // return Container();
-    return AnimatedTreeView<GalleryOrWallpaper>(
-      treeController: treeController,
-      nodeBuilder: (_, TreeEntry<GalleryOrWallpaper> entry) {
-        return TreeIndentation(
-          entry: entry,
-          child: Row(
-            children: [
-              SizedBox.square(
-                dimension: 40,
-                child: getLeadingFor(entry.node),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TreeItemController()..init())
+      ],
+      builder: (ctx, child) {
+        return AnimatedTreeView<GalleryOrWallpaper>(
+          treeController: treeController,
+          nodeBuilder: (_, TreeEntry<GalleryOrWallpaper> entry) {
+            return TreeIndentation(
+              entry: entry,
+              child: Row(
+                children: [
+                  SizedBox.square(
+                    dimension: 40,
+                    child: getLeadingFor(entry.node),
+                  ),
+                  // Text(entry.node.title),
+                  entry.node.map(gallery: (g) {
+                    return GestureDetector(
+                      onTap: () {
+                        ctx
+                            .read<TreeItemController>()
+                            .changeSelectedItemId(g.field0.galleryId);
+                      },
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: ctx
+                                          .watch<TreeItemController>()
+                                          .selectedItemId ==
+                                      g.field0.galleryId
+                                  ? Colors.blueGrey
+                                  : Colors.transparent),
+                          child: Text(g.field0.galleryName),
+                        ),
+                      ),
+                    );
+                  }, wallPaper: (w) {
+                    // debugPrint(w.field0.filePath);
+                    return Text(path.basename(w.field0.filePath));
+                  })
+                ],
               ),
-              // Text(entry.node.title),
-              entry.node.map(gallery: (g) {
-                // debugPrint(g.field0.galleryName);
-                return Text(g.field0.galleryName);
-              }, wallPaper: (w) {
-                // debugPrint(w.field0.filePath);
-                return Text(path.basename(w.field0.filePath));
-              })
-            ],
-          ),
+            );
+          },
+          padding: const EdgeInsets.all(8),
         );
       },
-      padding: const EdgeInsets.all(8),
     );
   }
 }

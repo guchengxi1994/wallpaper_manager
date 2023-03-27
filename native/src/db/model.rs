@@ -299,6 +299,43 @@ impl Gallery {
         })
     }
 
+    pub fn move_item(to_id: i64, f: GalleryOrWallpaper) {
+        let mut current = FOLDER_STATE.lock().unwrap();
+        match f {
+            GalleryOrWallpaper::Gallery(g) => {
+                let parent_id = current.get_parent_id_by_item_id(true, g.gallery_id);
+
+                let fake_folder = rs_filemanager::model::folder::Folder {
+                    children: vec![],
+                    name: g.gallery_name,
+                    parent_id: Some(parent_id),
+                    folder_id: g.gallery_id,
+                };
+
+                current.move_item_to(
+                    to_id,
+                    rs_filemanager::model::folder::FileOrFolder::Folder(fake_folder),
+                );
+            }
+            GalleryOrWallpaper::WallPaper(w) => {
+                let parent_id = current.get_parent_id_by_item_id(false, w.wall_paper_id);
+
+                let fake_file = rs_filemanager::model::file::File {
+                    path: w.file_path,
+                    parent_id,
+                    file_id: w.wall_paper_id,
+                };
+
+                current.move_item_to(
+                    to_id,
+                    rs_filemanager::model::folder::FileOrFolder::File(fake_file),
+                );
+            }
+        }
+
+        current.to_file(JSON_PATH.lock().unwrap().to_string())
+    }
+
     /// 删除，保留子文件数据
     pub fn delete_gallery_by_id_keep_children(i: i64) -> anyhow::Result<()> {
         let rt = tokio::runtime::Runtime::new().unwrap();

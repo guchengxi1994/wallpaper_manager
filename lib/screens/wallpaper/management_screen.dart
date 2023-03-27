@@ -99,7 +99,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                 HoverWidget(
                   hoverChild: GestureDetector(
                     onTap: () async {
-                      await showGeneralDialog(
+                      final r = await showGeneralDialog(
                           context: context,
                           pageBuilder: (c, a1, a2) {
                             return Center(
@@ -116,14 +116,29 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                                     ),
                                     TextButton(
                                         onPressed: () {
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop(false);
                                         },
-                                        child: Text("退出"))
+                                        child: Text("退出")),
+                                    TextButton(
+                                        onPressed: () async {
+                                          // Navigator.of(context).pop();
+                                          await api.moveItem(
+                                              toId: 6,
+                                              f: ctx
+                                                  .read<WallpaperController>()
+                                                  .images[1]);
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: Text("测试移动"))
                                   ],
                                 ),
                               ),
                             );
                           });
+
+                      if (r == true) {
+                        await ctx.read<WallpaperController>().init();
+                      }
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,

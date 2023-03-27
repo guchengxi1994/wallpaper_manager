@@ -201,3 +201,8 @@ pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
     })  
 }
 
+// 移动
+pub fn move_item(to_id: i64, f: GalleryOrWallpaper){
+    Gallery::move_item(to_id, f)
+}
+

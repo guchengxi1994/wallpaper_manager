@@ -98,6 +98,11 @@ abstract class Native {
       {required int i, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetChildrenByIdConstMeta;
+
+  Future<void> moveItem(
+      {required int toId, required GalleryOrWallpaper f, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMoveItemConstMeta;
 }
 
 class Gallery {
@@ -519,6 +524,25 @@ class NativeImpl implements Native {
         argNames: ["i"],
       );
 
+  Future<void> moveItem(
+      {required int toId, required GalleryOrWallpaper f, dynamic hint}) {
+    var arg0 = _platform.api2wire_i64(toId);
+    var arg1 = _platform.api2wire_box_autoadd_gallery_or_wallpaper(f);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_move_item(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kMoveItemConstMeta,
+      argValues: [toId, f],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kMoveItemConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "move_item",
+        argNames: ["toId", "f"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -640,6 +664,28 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Gallery> api2wire_box_autoadd_gallery(Gallery raw) {
+    final ptr = inner.new_box_autoadd_gallery_0();
+    _api_fill_to_wire_gallery(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_GalleryOrWallpaper>
+      api2wire_box_autoadd_gallery_or_wallpaper(GalleryOrWallpaper raw) {
+    final ptr = inner.new_box_autoadd_gallery_or_wallpaper_0();
+    _api_fill_to_wire_gallery_or_wallpaper(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_WallPaper> api2wire_box_autoadd_wall_paper(WallPaper raw) {
+    final ptr = inner.new_box_autoadd_wall_paper_0();
+    _api_fill_to_wire_wall_paper(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   int api2wire_i64(int raw) {
     return raw;
   }
@@ -650,9 +696,59 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
+
 // Section: finalizer
 
 // Section: api_fill_to_wire
+
+  void _api_fill_to_wire_box_autoadd_gallery(
+      Gallery apiObj, ffi.Pointer<wire_Gallery> wireObj) {
+    _api_fill_to_wire_gallery(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_box_autoadd_gallery_or_wallpaper(
+      GalleryOrWallpaper apiObj, ffi.Pointer<wire_GalleryOrWallpaper> wireObj) {
+    _api_fill_to_wire_gallery_or_wallpaper(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_box_autoadd_wall_paper(
+      WallPaper apiObj, ffi.Pointer<wire_WallPaper> wireObj) {
+    _api_fill_to_wire_wall_paper(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_gallery(Gallery apiObj, wire_Gallery wireObj) {
+    wireObj.gallery_id = api2wire_i64(apiObj.galleryId);
+    wireObj.create_at = api2wire_i64(apiObj.createAt);
+    wireObj.is_deleted = api2wire_i64(apiObj.isDeleted);
+    wireObj.gallery_name = api2wire_String(apiObj.galleryName);
+  }
+
+  void _api_fill_to_wire_gallery_or_wallpaper(
+      GalleryOrWallpaper apiObj, wire_GalleryOrWallpaper wireObj) {
+    if (apiObj is GalleryOrWallpaper_Gallery) {
+      var pre_field0 = api2wire_box_autoadd_gallery(apiObj.field0);
+      wireObj.tag = 0;
+      wireObj.kind = inner.inflate_GalleryOrWallpaper_Gallery();
+      wireObj.kind.ref.Gallery.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is GalleryOrWallpaper_WallPaper) {
+      var pre_field0 = api2wire_box_autoadd_wall_paper(apiObj.field0);
+      wireObj.tag = 1;
+      wireObj.kind = inner.inflate_GalleryOrWallpaper_WallPaper();
+      wireObj.kind.ref.WallPaper.ref.field0 = pre_field0;
+      return;
+    }
+  }
+
+  void _api_fill_to_wire_wall_paper(WallPaper apiObj, wire_WallPaper wireObj) {
+    wireObj.wall_paper_id = api2wire_i64(apiObj.wallPaperId);
+    wireObj.file_path = api2wire_String(apiObj.filePath);
+    wireObj.file_hash = api2wire_String(apiObj.fileHash);
+    wireObj.create_at = api2wire_i64(apiObj.createAt);
+    wireObj.is_deleted = api2wire_i64(apiObj.isDeleted);
+    wireObj.is_fav = api2wire_i64(apiObj.isFav);
+  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -1085,6 +1181,57 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_get_children_by_id =
       _wire_get_children_by_idPtr.asFunction<void Function(int, int)>();
 
+  void wire_move_item(
+    int port_,
+    int to_id,
+    ffi.Pointer<wire_GalleryOrWallpaper> f,
+  ) {
+    return _wire_move_item(
+      port_,
+      to_id,
+      f,
+    );
+  }
+
+  late final _wire_move_itemPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Int64,
+              ffi.Pointer<wire_GalleryOrWallpaper>)>>('wire_move_item');
+  late final _wire_move_item = _wire_move_itemPtr.asFunction<
+      void Function(int, int, ffi.Pointer<wire_GalleryOrWallpaper>)>();
+
+  ffi.Pointer<wire_Gallery> new_box_autoadd_gallery_0() {
+    return _new_box_autoadd_gallery_0();
+  }
+
+  late final _new_box_autoadd_gallery_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Gallery> Function()>>(
+          'new_box_autoadd_gallery_0');
+  late final _new_box_autoadd_gallery_0 = _new_box_autoadd_gallery_0Ptr
+      .asFunction<ffi.Pointer<wire_Gallery> Function()>();
+
+  ffi.Pointer<wire_GalleryOrWallpaper>
+      new_box_autoadd_gallery_or_wallpaper_0() {
+    return _new_box_autoadd_gallery_or_wallpaper_0();
+  }
+
+  late final _new_box_autoadd_gallery_or_wallpaper_0Ptr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<wire_GalleryOrWallpaper> Function()>>(
+      'new_box_autoadd_gallery_or_wallpaper_0');
+  late final _new_box_autoadd_gallery_or_wallpaper_0 =
+      _new_box_autoadd_gallery_or_wallpaper_0Ptr
+          .asFunction<ffi.Pointer<wire_GalleryOrWallpaper> Function()>();
+
+  ffi.Pointer<wire_WallPaper> new_box_autoadd_wall_paper_0() {
+    return _new_box_autoadd_wall_paper_0();
+  }
+
+  late final _new_box_autoadd_wall_paper_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_WallPaper> Function()>>(
+          'new_box_autoadd_wall_paper_0');
+  late final _new_box_autoadd_wall_paper_0 = _new_box_autoadd_wall_paper_0Ptr
+      .asFunction<ffi.Pointer<wire_WallPaper> Function()>();
+
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
   ) {
@@ -1099,6 +1246,28 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int32)>>('new_uint_8_list_0');
   late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
       .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
+
+  ffi.Pointer<GalleryOrWallpaperKind> inflate_GalleryOrWallpaper_Gallery() {
+    return _inflate_GalleryOrWallpaper_Gallery();
+  }
+
+  late final _inflate_GalleryOrWallpaper_GalleryPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<GalleryOrWallpaperKind> Function()>>(
+      'inflate_GalleryOrWallpaper_Gallery');
+  late final _inflate_GalleryOrWallpaper_Gallery =
+      _inflate_GalleryOrWallpaper_GalleryPtr
+          .asFunction<ffi.Pointer<GalleryOrWallpaperKind> Function()>();
+
+  ffi.Pointer<GalleryOrWallpaperKind> inflate_GalleryOrWallpaper_WallPaper() {
+    return _inflate_GalleryOrWallpaper_WallPaper();
+  }
+
+  late final _inflate_GalleryOrWallpaper_WallPaperPtr = _lookup<
+          ffi.NativeFunction<ffi.Pointer<GalleryOrWallpaperKind> Function()>>(
+      'inflate_GalleryOrWallpaper_WallPaper');
+  late final _inflate_GalleryOrWallpaper_WallPaper =
+      _inflate_GalleryOrWallpaper_WallPaperPtr
+          .asFunction<ffi.Pointer<GalleryOrWallpaperKind> Function()>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,
@@ -1122,6 +1291,58 @@ class wire_uint_8_list extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
+}
+
+class wire_Gallery extends ffi.Struct {
+  @ffi.Int64()
+  external int gallery_id;
+
+  @ffi.Int64()
+  external int create_at;
+
+  @ffi.Int64()
+  external int is_deleted;
+
+  external ffi.Pointer<wire_uint_8_list> gallery_name;
+}
+
+class wire_GalleryOrWallpaper_Gallery extends ffi.Struct {
+  external ffi.Pointer<wire_Gallery> field0;
+}
+
+class wire_WallPaper extends ffi.Struct {
+  @ffi.Int64()
+  external int wall_paper_id;
+
+  external ffi.Pointer<wire_uint_8_list> file_path;
+
+  external ffi.Pointer<wire_uint_8_list> file_hash;
+
+  @ffi.Int64()
+  external int create_at;
+
+  @ffi.Int64()
+  external int is_deleted;
+
+  @ffi.Int64()
+  external int is_fav;
+}
+
+class wire_GalleryOrWallpaper_WallPaper extends ffi.Struct {
+  external ffi.Pointer<wire_WallPaper> field0;
+}
+
+class GalleryOrWallpaperKind extends ffi.Union {
+  external ffi.Pointer<wire_GalleryOrWallpaper_Gallery> Gallery;
+
+  external ffi.Pointer<wire_GalleryOrWallpaper_WallPaper> WallPaper;
+}
+
+class wire_GalleryOrWallpaper extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
+
+  external ffi.Pointer<GalleryOrWallpaperKind> kind;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<
