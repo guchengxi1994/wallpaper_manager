@@ -1,7 +1,10 @@
 use crate::db::init::DB_PATH;
-use crate::db::model::{Gallery, GalleryOrWallpaper, WallPaper, GLOBAL_GALLERY_ID, JSON_PATH,FOLDER_STATE};
+use crate::db::model::{
+    Gallery, GalleryOrWallpaper, WallPaper, FOLDER_STATE, GLOBAL_GALLERY_ID, JSON_PATH,
+};
 use crate::storage;
 use crate::utils::ScreenParams;
+use crate::wallpaper_engine::wallpaper_engine::WallpaperEngine;
 use futures::executor::block_on;
 
 pub fn rust_bridge_say_hello() -> String {
@@ -85,42 +88,28 @@ pub fn get_current_wall_paper() -> String {
 }
 
 pub fn set_wall_paper(s: String) -> i64 {
-    let r = wallpaper::set_from_path(s.as_str());
-    match r {
-        Ok(_) => {
-            return 0;
-        }
-        Err(_) => {
-            return -1;
-        }
-    }
+    WallpaperEngine::set_wallpaper(s)
 }
 
 // 设置 json 路径
 pub fn set_json_path(s: String) {
-    block_on(async {
-        if !crate::db::init::path_exists(s.clone()) {
-            let _ = std::fs::File::create(s.clone());
-        }
-        let mut _s = JSON_PATH.lock().unwrap();
-        *_s = s;
-    })
+    if !crate::db::init::path_exists(s.clone()) {
+        let _ = std::fs::File::create(s.clone());
+    }
+    let mut _s = JSON_PATH.lock().unwrap();
+    *_s = s;
 }
 
 // 设置 db 路径
 pub fn set_db_path(s: String) {
-    block_on(async {
-        let mut _s = DB_PATH.lock().unwrap();
-        *_s = s;
-    })
+    let mut _s = DB_PATH.lock().unwrap();
+    *_s = s;
 }
 
 // 修改当前 gallery_id
 pub fn set_gallery_id(id: i64) {
-    block_on(async {
-        let mut _s = GLOBAL_GALLERY_ID.lock().unwrap();
-        *_s = id;
-    })
+    let mut _s = GLOBAL_GALLERY_ID.lock().unwrap();
+    *_s = id;
 }
 
 // 新建 gallery
@@ -167,7 +156,7 @@ pub fn download_file(url: String, save_path: String) -> String {
     }
 }
 
-pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
+pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper> {
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
         let folder = &*FOLDER_STATE.lock().unwrap();
@@ -175,7 +164,7 @@ pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
         let mut res: Vec<GalleryOrWallpaper> = Vec::new();
         let pool = crate::db::connection::POOL.read().await;
         let _p = pool.get_pool();
-    
+
         for i in folder_or_files {
             match i {
                 rs_filemanager::model::folder::FileOrFolder::File(file) => {
@@ -196,13 +185,12 @@ pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper>{
                 }
             }
         }
-    
+
         res
-    })  
+    })
 }
 
 // 移动
-pub fn move_item(to_id: i64, f: GalleryOrWallpaper){
+pub fn move_item(to_id: i64, f: GalleryOrWallpaper) {
     Gallery::move_item(to_id, f)
 }
-

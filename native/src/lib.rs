@@ -4,3 +4,4 @@ mod tests;
 pub mod db;
 pub mod storage;
 pub mod utils;
+pub mod wallpaper_engine;

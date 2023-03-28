@@ -23,6 +23,7 @@ rs_filemanager = {path = "D:/github_repo/rs_filemanager"} # for dev
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser"] }
 winrt-notification = "0.5.1"
+winsafe = {version = "0.0.14", features = ["kernel", "user"] }
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "= 1.62.1"
