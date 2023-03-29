@@ -27,7 +27,7 @@ class AnimationSrn:
 
     def getScreenHandle(self):
         hwnd = win32gui.FindWindow("Progman", "Program Manager")
-        # print(hwnd)
+        print("hwnd  ",  hwnd)
         win32gui.SendMessageTimeout(hwnd, 0x052C, 0, None, 0, 0x03E8)
         hwnd_WorkW = None
         while 1:
@@ -52,7 +52,7 @@ class AnimationSrn:
 
     def putGifScreen(self):
         parenthwnd = self.getScreenHandle()
-        print(parenthwnd)
+        print("parenthwnd  ", parenthwnd)
 
         #使用pyglet加载动画
         # print ("1ll", parenthwnd)

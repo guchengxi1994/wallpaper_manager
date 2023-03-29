@@ -106,6 +106,8 @@ void wire_get_children_by_id(int64_t port_, int64_t i);
 
 void wire_move_item(int64_t port_, int64_t to_id, struct wire_GalleryOrWallpaper *f);
 
+void wire_set_dynamic_wallpaper(int64_t port_, uint32_t pid);
+
 struct wire_Gallery *new_box_autoadd_gallery_0(void);
 
 struct wire_GalleryOrWallpaper *new_box_autoadd_gallery_or_wallpaper_0(void);
@@ -144,6 +146,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_download_file);
     dummy_var ^= ((int64_t) (void*) wire_get_children_by_id);
     dummy_var ^= ((int64_t) (void*) wire_move_item);
+    dummy_var ^= ((int64_t) (void*) wire_set_dynamic_wallpaper);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_gallery_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_gallery_or_wallpaper_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_wall_paper_0);

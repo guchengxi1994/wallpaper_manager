@@ -12,6 +12,7 @@ import '../tree_view/lazy_tree_view.dart';
 import 'add_one_image_card.dart';
 import 'gallary_card.dart';
 import 'image_card.dart';
+import 'sub_process_controller.dart';
 
 class WallpaperManagerScreen extends StatefulWidget {
   const WallpaperManagerScreen({super.key});
@@ -44,7 +45,8 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => WallpaperController()..init())
+        ChangeNotifierProvider(create: (_) => WallpaperController()..init()),
+        ChangeNotifierProvider(create: (_) => SubProcessController()..init()),
       ],
       builder: (ctx, child) {
         return Scaffold(
@@ -93,6 +95,68 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                     height: 30,
                     child: Center(
                       child: Icon(Icons.chevron_left),
+                    ),
+                  ),
+                ),
+                HoverWidget(
+                  hoverChild: GestureDetector(
+                    onTap: () async {
+                      await ctx.read<SubProcessController>().run();
+                      Future.delayed(Duration(seconds: 5)).then((value) async =>
+                          {
+                            await api.setDynamicWallpaper(
+                                pid: ctx.read<SubProcessController>().playerPid)
+                          });
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        width: 30,
+                        height: 30,
+                        child: const Center(
+                          child: Icon(Icons.set_meal),
+                        ),
+                      ),
+                    ),
+                  ),
+                  onHover: (event) {},
+                  child: const SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: Center(
+                      child: Icon(Icons.set_meal),
+                    ),
+                  ),
+                ),
+                HoverWidget(
+                  hoverChild: GestureDetector(
+                    onTap: () async {
+                      ctx.read<SubProcessController>().killProcess();
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        width: 30,
+                        height: 30,
+                        child: const Center(
+                          child:
+                              Icon(Icons.keyboard_double_arrow_right_outlined),
+                        ),
+                      ),
+                    ),
+                  ),
+                  onHover: (event) {},
+                  child: const SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: Center(
+                      child: Icon(Icons.keyboard_double_arrow_right_outlined),
                     ),
                   ),
                 ),

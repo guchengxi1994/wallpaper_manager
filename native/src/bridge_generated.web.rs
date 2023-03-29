@@ -111,6 +111,11 @@ pub fn wire_move_item(port_: MessagePort, to_id: i64, f: JsValue) {
     wire_move_item_impl(port_, to_id, f)
 }
 
+#[wasm_bindgen]
+pub fn wire_set_dynamic_wallpaper(port_: MessagePort, pid: u32) {
+    wire_set_dynamic_wallpaper_impl(port_, pid)
+}
+
 // Section: allocate functions
 
 // Section: related functions
@@ -185,6 +190,11 @@ impl Wire2Api<String> for JsValue {
 impl Wire2Api<i64> for JsValue {
     fn wire2api(self) -> i64 {
         ::std::convert::TryInto::try_into(self.dyn_into::<js_sys::BigInt>().unwrap()).unwrap()
+    }
+}
+impl Wire2Api<u32> for JsValue {
+    fn wire2api(self) -> u32 {
+        self.unchecked_into_f64() as _
     }
 }
 impl Wire2Api<u8> for JsValue {

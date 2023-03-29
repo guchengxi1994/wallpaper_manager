@@ -1,0 +1,1 @@
+"./dist/player/player.exe" --width 400 --height 300 --show_border false --video_path "C:\Users\xiaoshuyui\Desktop\不常用的东西\result_voice.mp4"

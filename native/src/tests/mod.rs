@@ -1,3 +1,4 @@
 mod test_change_wall_paper;
 mod test_get_windows_screen_size;
 mod test_windows_toast;
+mod test_get_windows_hwnd;

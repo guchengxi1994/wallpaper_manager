@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
+  fc_native_video_thumbnail
   screen_retriever
   tray_manager
   window_manager

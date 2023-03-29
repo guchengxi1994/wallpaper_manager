@@ -1,0 +1,1 @@
+python player.py --width 400 --height 300  --video_path "C:\Users\xiaoshuyui\Desktop\不常用的东西\result_voice.mp4"
