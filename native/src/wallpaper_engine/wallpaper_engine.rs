@@ -7,6 +7,7 @@ use winsafe::{
     AtomStr, EnumWindows, HWND, WINDOWINFO,
 };
 
+
 pub struct WallpaperEngine;
 
 impl WallpaperEngine {

@@ -309,6 +309,19 @@ fn wire_move_item_impl(
         },
     )
 }
+fn wire_set_dynamic_wallpaper_impl(port_: MessagePort, pid: impl Wire2Api<u32> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "set_dynamic_wallpaper",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_pid = pid.wire2api();
+            move |task_callback| Ok(set_dynamic_wallpaper(api_pid))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -334,6 +347,11 @@ where
 
 impl Wire2Api<i64> for i64 {
     fn wire2api(self) -> i64 {
+        self
+    }
+}
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
         self
     }
 }

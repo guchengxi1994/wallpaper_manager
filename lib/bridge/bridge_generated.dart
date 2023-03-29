@@ -103,6 +103,10 @@ abstract class Native {
       {required int toId, required GalleryOrWallpaper f, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kMoveItemConstMeta;
+
+  Future<void> setDynamicWallpaper({required int pid, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSetDynamicWallpaperConstMeta;
 }
 
 class Gallery {
@@ -543,6 +547,24 @@ class NativeImpl implements Native {
         argNames: ["toId", "f"],
       );
 
+  Future<void> setDynamicWallpaper({required int pid, dynamic hint}) {
+    var arg0 = api2wire_u32(pid);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_set_dynamic_wallpaper(port_, arg0),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kSetDynamicWallpaperConstMeta,
+      argValues: [pid],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kSetDynamicWallpaperConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "set_dynamic_wallpaper",
+        argNames: ["pid"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -645,6 +667,11 @@ class NativeImpl implements Native {
 }
 
 // Section: api2wire
+
+@protected
+int api2wire_u32(int raw) {
+  return raw;
+}
 
 @protected
 int api2wire_u8(int raw) {
@@ -1199,6 +1226,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_GalleryOrWallpaper>)>>('wire_move_item');
   late final _wire_move_item = _wire_move_itemPtr.asFunction<
       void Function(int, int, ffi.Pointer<wire_GalleryOrWallpaper>)>();
+
+  void wire_set_dynamic_wallpaper(
+    int port_,
+    int pid,
+  ) {
+    return _wire_set_dynamic_wallpaper(
+      port_,
+      pid,
+    );
+  }
+
+  late final _wire_set_dynamic_wallpaperPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Uint32)>>(
+          'wire_set_dynamic_wallpaper');
+  late final _wire_set_dynamic_wallpaper =
+      _wire_set_dynamic_wallpaperPtr.asFunction<void Function(int, int)>();
 
   ffi.Pointer<wire_Gallery> new_box_autoadd_gallery_0() {
     return _new_box_autoadd_gallery_0();

@@ -115,6 +115,11 @@ pub extern "C" fn wire_move_item(port_: i64, to_id: i64, f: *mut wire_GalleryOrW
     wire_move_item_impl(port_, to_id, f)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_set_dynamic_wallpaper(port_: i64, pid: u32) {
+    wire_set_dynamic_wallpaper_impl(port_, pid)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

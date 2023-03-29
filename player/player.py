@@ -84,6 +84,8 @@ if __name__ == "__main__":
             width=args.width,
             height=args.height,
         )
+        # print(args.show_border)
+        # print(vconfig.showBorder)
         app = QApplication(sys.argv)
         player = VideoPlayer(config=vconfig)
         player.setWindowTitle("Player")

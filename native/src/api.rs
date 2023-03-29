@@ -194,3 +194,14 @@ pub fn get_children_by_id(i: i64) -> Vec<GalleryOrWallpaper> {
 pub fn move_item(to_id: i64, f: GalleryOrWallpaper) {
     Gallery::move_item(to_id, f)
 }
+
+// 设置视频壁纸
+pub fn set_dynamic_wallpaper(pid: u32) {
+    let r = WallpaperEngine::set_dynamic_wallpaper(pid);
+    match r {
+        Ok(_) => {}
+        Err(e) => {
+            println!("[rust-wallpaper-error]: {:?}", e)
+        }
+    }
+}
