@@ -61,13 +61,15 @@ class WallpaperController extends ChangeNotifier {
       'png',
       'gif',
       'webp',
-      'cr2',
       'tiff',
       'bmp',
-      'jxr',
-      'psd'
+      'mp4',
+      'm4v',
+      'mkv',
+      'mov',
+      'avi'
     ].contains(matcher.extension)) {
-      SmartDialog.showToast("不是图片类型");
+      SmartDialog.showToast("不是支持的类型");
       return;
     }
 

@@ -1,0 +1,1 @@
+python player.py --width 400 --height 300  --video_path "D:\github_repo\wallpaper_manager\images\test.gif"

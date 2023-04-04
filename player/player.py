@@ -1,3 +1,4 @@
+import traceback
 from PySide6.QtWidgets import (
     QMainWindow,
     QApplication,
@@ -5,9 +6,11 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QWidget,
+    QLabel,
 )
 from PySide6 import QtCore
 from PySide6.QtMultimedia import QMediaPlayer
+from PySide6.QtGui import QMovie
 from PySide6.QtMultimediaWidgets import QVideoWidget
 
 
@@ -18,11 +21,13 @@ class VideoPlayerConfig:
         showBorder: bool = False,
         width: int = 800,
         height: int = 600,
+        isGif: bool = False,
     ) -> None:
         self.showBorder = showBorder
         self.width = width
         self.height = height
         self.videoPath = videoPath
+        self.isGif = isGif
 
 
 class VideoPlayer(QMainWindow):
@@ -32,26 +37,41 @@ class VideoPlayer(QMainWindow):
         super().__init__(parent)
 
         self.resize(config.width, config.height)
+        layout = QVBoxLayout()
+
         if not config.showBorder:
             self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
-        self.mediaPlayer = QMediaPlayer(self)
-        videoWidget = QVideoWidget()
-        self.positionSlider = QSlider(QtCore.Qt.Horizontal)
-        self.positionSlider.setRange(0, 0)
-        self.positionSlider.sliderMoved.connect(self.setPosition)
-        controlLayout = QHBoxLayout()
-        controlLayout.addWidget(self.positionSlider)
-        layout = QVBoxLayout()
-        layout.addWidget(videoWidget)
-        if config.showBorder:
-            layout.addLayout(controlLayout)
-            self.mediaPlayer.positionChanged.connect(self.positionChanged)
-            self.mediaPlayer.durationChanged.connect(self.durationChanged)
-        if config.videoPath is not None:
-            self.mediaPlayer.setSource(QtCore.QUrl.fromLocalFile(config.videoPath))
-            self.mediaPlayer.setLoops(QMediaPlayer.Loops.Infinite)
-            self.mediaPlayer.play()
-        self.mediaPlayer.setVideoOutput(videoWidget)
+
+        if config.isGif:
+            movie = QMovie(config.videoPath)
+            label = QLabel()
+            label.setAlignment(QtCore.Qt.AlignCenter)
+            label.setMovie(movie)
+            movie.start()
+            label.show()
+            layout.addWidget(label)
+        else:
+            self.mediaPlayer = QMediaPlayer(self)
+            videoWidget = QVideoWidget()
+            self.positionSlider = QSlider(QtCore.Qt.Horizontal)
+            self.positionSlider.setRange(0, 0)
+            self.positionSlider.sliderMoved.connect(self.setPosition)
+            controlLayout = QHBoxLayout()
+            controlLayout.addWidget(self.positionSlider)
+
+            layout.addWidget(videoWidget)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
+            if config.showBorder:
+                layout.addLayout(controlLayout)
+                self.mediaPlayer.positionChanged.connect(self.positionChanged)
+                self.mediaPlayer.durationChanged.connect(self.durationChanged)
+            if config.videoPath is not None:
+                self.mediaPlayer.setSource(QtCore.QUrl.fromLocalFile(config.videoPath))
+                self.mediaPlayer.setLoops(QMediaPlayer.Loops.Infinite)
+                self.mediaPlayer.play()
+            self.mediaPlayer.setVideoOutput(videoWidget)
+
         self.mainWidget = QWidget()
         self.mainWidget.setLayout(layout)
         self.setCentralWidget(self.mainWidget)
@@ -83,6 +103,7 @@ if __name__ == "__main__":
             showBorder=args.show_border,
             width=args.width,
             height=args.height,
+            isGif=args.video_path.endswith("gif"),
         )
         # print(args.show_border)
         # print(vconfig.showBorder)
@@ -92,4 +113,5 @@ if __name__ == "__main__":
         player.show()
         sys.exit(app.exec())
     except:
+        traceback.print_exc()
         parser.print_help()

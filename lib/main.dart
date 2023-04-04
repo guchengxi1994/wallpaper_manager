@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/routers.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:wallpaper_manager/utils.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
+
+import 'screens/wallpaper/sub_process_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,12 +73,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: Routers.routers,
-      initialRoute: Routers.splashScreen,
-      navigatorObservers: [FlutterSmartDialog.observer],
-      builder: FlutterSmartDialog.init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SubProcessController()..init()),
+      ],
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          routes: Routers.routers,
+          initialRoute: Routers.splashScreen,
+          navigatorObservers: [FlutterSmartDialog.observer],
+          builder: FlutterSmartDialog.init(),
+        );
+      },
     );
   }
 }

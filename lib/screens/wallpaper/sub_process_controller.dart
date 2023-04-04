@@ -28,10 +28,11 @@ class SubProcessController extends ChangeNotifier {
 
   run({String? videoPath}) async {
     if (playerPid != -1) {
-      return;
+      killProcess();
     }
 
     if (playerPath == "") {
+      SmartDialog.showToast("播放器不存在");
       return;
     }
     try {
@@ -40,11 +41,12 @@ class SubProcessController extends ChangeNotifier {
         "--video_path",
         r"C:\Users\xiaoshuyui\Desktop\不常用的东西\result_voice.mp4",
         "--width",
-        "400",
+        screenParams.width.toString(),
         "--height",
-        "300",
+        screenParams.height.toString(),
       ]);
       playerPid = process.pid;
+      debugPrint("[flutter-player-pid]:$playerPid");
     } catch (_) {
       SmartDialog.showToast("失败");
     }
@@ -53,6 +55,7 @@ class SubProcessController extends ChangeNotifier {
   killProcess() {
     if (playerPid != -1) {
       Process.killPid(playerPid);
+      playerPid = -1;
     }
   }
 }

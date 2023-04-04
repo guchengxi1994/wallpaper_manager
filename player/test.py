@@ -64,7 +64,7 @@ class VideoPlayer(QWidget):
             self,
             "Selecciona los mediose",
             ".",
-            "Video Files (*.mp4 *.flv *.ts *.mts *.avi)",
+            "Video Files (*.mp4 *.flv *.ts *.mts *.avi *.gif)",
         )
         if fileName != "":
             self.mediaPlayer.setSource(QUrl.fromLocalFile(fileName))
