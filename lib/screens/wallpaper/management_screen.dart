@@ -73,6 +73,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
   @override
   void dispose() {
     trayManager.removeListener(this);
+    windowManager.removeListener(this);
     super.dispose();
   }
 
@@ -138,70 +139,41 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                     ),
                   ),
                 ),
-                HoverWidget(
-                  hoverChild: GestureDetector(
-                    onTap: () async {
-                      await ctx.read<SubProcessController>().run();
-                      Future.delayed(const Duration(seconds: 5)).then(
-                          (value) async => {
-                                await api.setDynamicWallpaper(
-                                    pid: ctx
-                                        .read<SubProcessController>()
-                                        .playerPid)
-                              });
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5)),
-                        width: 30,
-                        height: 30,
-                        child: const Center(
-                          child: Icon(Icons.set_meal),
-                        ),
-                      ),
-                    ),
-                  ),
-                  onHover: (event) {},
-                  child: const SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: Center(
-                      child: Icon(Icons.set_meal),
-                    ),
-                  ),
-                ),
-                HoverWidget(
-                  hoverChild: GestureDetector(
-                    onTap: () async {
-                      ctx.read<SubProcessController>().killProcess();
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5)),
-                        width: 30,
-                        height: 30,
-                        child: const Center(
-                          child:
-                              Icon(Icons.keyboard_double_arrow_right_outlined),
-                        ),
-                      ),
-                    ),
-                  ),
-                  onHover: (event) {},
-                  child: const SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: Center(
-                      child: Icon(Icons.keyboard_double_arrow_right_outlined),
-                    ),
-                  ),
-                ),
+                // HoverWidget(
+                //   hoverChild: GestureDetector(
+                //     onTap: () async {
+                //       await ctx.read<SubProcessController>().run();
+                //       Future.delayed(const Duration(seconds: 5)).then(
+                //           (value) async => {
+                //                 await api.setDynamicWallpaper(
+                //                     pid: ctx
+                //                         .read<SubProcessController>()
+                //                         .playerPid)
+                //               });
+                //     },
+                //     child: MouseRegion(
+                //       cursor: SystemMouseCursors.click,
+                //       child: Container(
+                //         decoration: BoxDecoration(
+                //             color: Colors.white,
+                //             borderRadius: BorderRadius.circular(5)),
+                //         width: 30,
+                //         height: 30,
+                //         child: const Center(
+                //           child: Icon(Icons.set_meal),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                //   onHover: (event) {},
+                //   child: const SizedBox(
+                //     width: 30,
+                //     height: 30,
+                //     child: Center(
+                //       child: Icon(Icons.set_meal),
+                //     ),
+                //   ),
+                // ),
                 HoverWidget(
                   hoverChild: GestureDetector(
                     onTap: () async {

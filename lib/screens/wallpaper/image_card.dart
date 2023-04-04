@@ -2,6 +2,8 @@
 
 import 'dart:io';
 import 'dart:ui';
+import 'package:lottie/lottie.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:hovering/hovering.dart';
 import 'package:provider/provider.dart';
 import 'package:wallpaper_manager/app_style.dart';
+import 'package:wallpaper_manager/screens/wallpaper/sub_process_controller.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
 
 import '../../bridge/native.dart';
@@ -18,16 +21,31 @@ class ImageCard extends StatelessWidget {
   const ImageCard({super.key, required this.paper});
   final WallPaper paper;
 
+  bool isInputAnImage(String s) {
+    final ext = path.extension(s);
+    return [
+      'jpg',
+      'jpx',
+      'apng',
+      'png',
+      'gif',
+      'webp',
+      'tiff',
+      'bmp',
+    ].contains(ext);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isImage = isInputAnImage(paper.filePath);
     return HoverWidget(
-      hoverChild: _onHovering(context),
+      hoverChild: _onHovering(context, isImage),
       onHover: (event) {},
-      child: _beforeHover(),
+      child: _beforeHover(isImage),
     );
   }
 
-  Widget _beforeHover() {
+  Widget _beforeHover(bool isImage) {
     return Card(
       elevation: 4,
       child: SizedBox(
@@ -35,36 +53,41 @@ class ImageCard extends StatelessWidget {
         height: AppStyle.cardHeight,
         child: Stack(
           children: [
-            ExtendedImage.file(
-              File(paper.filePath),
-              loadStateChanged: (state) {
-                switch (state.extendedImageLoadState) {
-                  case LoadState.loading:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  case LoadState.completed:
-                    return ExtendedRawImage(
-                      width: AppStyle.cardWidth,
-                      height: AppStyle.cardHeight,
-                      image: state.extendedImageInfo?.image,
-                      fit: BoxFit.fitWidth,
-                    );
-                  case LoadState.failed:
-                    return Image.asset(
-                      "asset/image/no.png",
-                      fit: BoxFit.fill,
-                    );
-                }
-              },
-            )
+            isImage
+                ? ExtendedImage.file(
+                    File(paper.filePath),
+                    loadStateChanged: (state) {
+                      switch (state.extendedImageLoadState) {
+                        case LoadState.loading:
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        case LoadState.completed:
+                          return ExtendedRawImage(
+                            width: AppStyle.cardWidth,
+                            height: AppStyle.cardHeight,
+                            image: state.extendedImageInfo?.image,
+                            fit: BoxFit.fitWidth,
+                          );
+                        case LoadState.failed:
+                          return Image.asset(
+                            "asset/image/no.png",
+                            fit: BoxFit.fill,
+                          );
+                      }
+                    },
+                  )
+                : Lottie.asset(
+                    "asset/image/player.json",
+                    fit: BoxFit.fill,
+                  )
           ],
         ),
       ),
     );
   }
 
-  Widget _onHovering(BuildContext ctx) {
+  Widget _onHovering(BuildContext ctx, bool isImage) {
     return GestureDetector(
       onDoubleTap: () async {
         final fileType =
@@ -79,6 +102,13 @@ class ImageCard extends StatelessWidget {
                   ),
                 );
               });
+          return;
+        }
+
+        if (!isImage) {
+          await ctx
+              .read<SubProcessController>()
+              .watchVideo(videoPath: paper.filePath);
         }
       },
       child: Card(
@@ -88,29 +118,34 @@ class ImageCard extends StatelessWidget {
           height: AppStyle.cardHeight,
           child: Stack(
             children: [
-              ExtendedImage.file(
-                File(paper.filePath),
-                loadStateChanged: (state) {
-                  switch (state.extendedImageLoadState) {
-                    case LoadState.loading:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    case LoadState.completed:
-                      return ExtendedRawImage(
-                        width: AppStyle.cardWidth,
-                        height: AppStyle.cardHeight,
-                        image: state.extendedImageInfo?.image,
-                        fit: BoxFit.fitWidth,
-                      );
-                    case LoadState.failed:
-                      return Image.asset(
-                        "asset/image/no.png",
-                        fit: BoxFit.fill,
-                      );
-                  }
-                },
-              ),
+              isImage
+                  ? ExtendedImage.file(
+                      File(paper.filePath),
+                      loadStateChanged: (state) {
+                        switch (state.extendedImageLoadState) {
+                          case LoadState.loading:
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          case LoadState.completed:
+                            return ExtendedRawImage(
+                              width: AppStyle.cardWidth,
+                              height: AppStyle.cardHeight,
+                              image: state.extendedImageInfo?.image,
+                              fit: BoxFit.fitWidth,
+                            );
+                          case LoadState.failed:
+                            return Image.asset(
+                              "asset/image/no.png",
+                              fit: BoxFit.fill,
+                            );
+                        }
+                      },
+                    )
+                  : Lottie.asset(
+                      "asset/image/player.json",
+                      fit: BoxFit.fill,
+                    ),
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -188,7 +223,21 @@ class ImageCard extends StatelessWidget {
                             return;
                           }
 
-                          await api.setWallPaper(s: paper.filePath);
+                          if (isImage) {
+                            await api.setWallPaper(s: paper.filePath);
+                          } else {
+                            await ctx
+                                .read<SubProcessController>()
+                                .run(videoPath: paper.filePath);
+
+                            Future.delayed(const Duration(seconds: 5)).then(
+                                (value) async => {
+                                      await api.setDynamicWallpaper(
+                                          pid: ctx
+                                              .read<SubProcessController>()
+                                              .playerPid)
+                                    });
+                          }
                         },
                         child: const Icon(
                           Icons.wallpaper,
