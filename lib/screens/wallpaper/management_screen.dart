@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/screens/wallpaper/wallpaper_controller.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../tree_view/lazy_tree_view.dart';
 import 'add_one_image_card.dart';
@@ -22,11 +23,51 @@ class WallpaperManagerScreen extends StatefulWidget {
 }
 
 class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
-    with TrayListener {
+    with TrayListener, WindowListener {
   @override
   void initState() {
     trayManager.addListener(this);
+    windowManager.addListener(this);
+    _init();
     super.initState();
+  }
+
+  void _init() async {
+    // 添加此行以覆盖默认关闭处理程序
+    await windowManager.setPreventClose(true);
+    setState(() {});
+  }
+
+  @override
+  void onWindowClose() async {
+    bool isPreventClose = await windowManager.isPreventClose();
+    if (isPreventClose) {
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title:
+                const Text('Are you sure you want to close this application?'),
+            actions: [
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () async {
+                  context.read<SubProcessController>().killProcess();
+                  Navigator.of(context).pop();
+                  await windowManager.destroy();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -46,7 +87,6 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WallpaperController()..init()),
-        ChangeNotifierProvider(create: (_) => SubProcessController()..init()),
       ],
       builder: (ctx, child) {
         return Scaffold(
@@ -102,11 +142,13 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                   hoverChild: GestureDetector(
                     onTap: () async {
                       await ctx.read<SubProcessController>().run();
-                      Future.delayed(Duration(seconds: 5)).then((value) async =>
-                          {
-                            await api.setDynamicWallpaper(
-                                pid: ctx.read<SubProcessController>().playerPid)
-                          });
+                      Future.delayed(const Duration(seconds: 5)).then(
+                          (value) async => {
+                                await api.setDynamicWallpaper(
+                                    pid: ctx
+                                        .read<SubProcessController>()
+                                        .playerPid)
+                              });
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
@@ -173,7 +215,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                                 color: Colors.white,
                                 child: Column(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 500,
                                       height: 500,
                                       child: LazyTreeview(),
@@ -182,7 +224,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                                         onPressed: () {
                                           Navigator.of(context).pop(false);
                                         },
-                                        child: Text("退出")),
+                                        child: const Text("退出")),
                                     TextButton(
                                         onPressed: () async {
                                           // Navigator.of(context).pop();
@@ -193,7 +235,7 @@ class _WallpaperManagerScreenState extends State<WallpaperManagerScreen>
                                                   .images[1]);
                                           Navigator.of(context).pop(true);
                                         },
-                                        child: Text("测试移动"))
+                                        child: const Text("测试移动"))
                                   ],
                                 ),
                               ),
