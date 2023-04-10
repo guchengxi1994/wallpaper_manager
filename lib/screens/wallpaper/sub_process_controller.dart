@@ -26,7 +26,7 @@ class SubProcessController extends ChangeNotifier {
     }
   }
 
-  run({String? videoPath}) async {
+  run({required String videoPath}) async {
     if (playerPid != -1) {
       killProcess();
     }
@@ -39,11 +39,38 @@ class SubProcessController extends ChangeNotifier {
       final screenParams = await api.getScreenSize();
       final process = await Process.start(playerPath, [
         "--video_path",
-        r"C:\Users\xiaoshuyui\Desktop\不常用的东西\result_voice.mp4",
+        videoPath,
         "--width",
         screenParams.width.toString(),
         "--height",
         screenParams.height.toString(),
+      ]);
+      playerPid = process.pid;
+      debugPrint("[flutter-player-pid]:$playerPid");
+    } catch (_) {
+      SmartDialog.showToast("失败");
+    }
+  }
+
+  watchVideo({required String videoPath}) async {
+    if (playerPid != -1) {
+      killProcess();
+    }
+
+    if (playerPath == "") {
+      SmartDialog.showToast("播放器不存在");
+      return;
+    }
+    try {
+      final process = await Process.run(playerPath, [
+        "--video_path",
+        videoPath,
+        "--width",
+        "800",
+        "--height",
+        "600",
+        "--show_border",
+        "true"
       ]);
       playerPid = process.pid;
       debugPrint("[flutter-player-pid]:$playerPid");

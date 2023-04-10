@@ -52,6 +52,11 @@ pub fn wire_set_is_fav_by_id(port_: MessagePort, i: i64, is_fav: i64) {
 }
 
 #[wasm_bindgen]
+pub fn wire_get_all_favs(port_: MessagePort) {
+    wire_get_all_favs_impl(port_)
+}
+
+#[wasm_bindgen]
 pub fn wire_get_current_wall_paper(port_: MessagePort) {
     wire_get_current_wall_paper_impl(port_)
 }

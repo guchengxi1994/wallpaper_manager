@@ -146,6 +146,16 @@ fn wire_set_is_fav_by_id_impl(
         },
     )
 }
+fn wire_get_all_favs_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_all_favs",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_all_favs()),
+    )
+}
 fn wire_get_current_wall_paper_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

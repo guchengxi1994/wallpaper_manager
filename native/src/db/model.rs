@@ -104,6 +104,24 @@ impl WallPaper {
     }
 
     #[tokio::main]
+    pub async fn get_all_favs() -> Vec<WallPaper> {
+        let pool = crate::db::connection::POOL.read().await;
+        let _sql = sqlx::query_as::<sqlx::Sqlite, WallPaper>(
+            r#"SELECT * from wall_paper where is_deleted = 0 and is_fav = 1"#,
+        )
+        .fetch_all(pool.get_pool())
+        .await;
+        match _sql {
+            Ok(r) => {
+                return r;
+            }
+            Err(_) => {
+                return vec![];
+            }
+        }
+    }
+
+    #[tokio::main]
     pub async fn get_paper_by_id(i: i64) -> Option<WallPaper> {
         let pool = crate::db::connection::POOL.read().await;
         let _sql = sqlx::query_as::<sqlx::Sqlite, WallPaper>(

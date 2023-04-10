@@ -2,7 +2,7 @@ name: wallpaper_manager
 description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.7
+version: 0.1.8
 
 environment:
   sdk: '>=2.19.3 <3.0.0'
@@ -11,7 +11,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   desktop_drop: ^0.4.1
   extended_image: ^7.0.2
-  fc_native_video_thumbnail: ^0.4.0
   ffi: ^2.0.1
   file_type: 
     git: 
@@ -25,6 +24,7 @@ dependencies:
   gif: ^2.2.0
   hovering: ^1.0.4
   loading_indicator: ^3.1.0
+  lottie: ^2.3.1
   # media_kit_libs_windows_video: ^1.0.0       # Windows package for video (& audio) native libraries. build too big
   provider: ^6.0.3
   tray_manager: ^0.2.0
@@ -57,6 +57,7 @@ flutter:
   assets:
     - asset/image/no.png
     - asset/image/gallery.png
+    - asset/image/player.json
     - asset/icons/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

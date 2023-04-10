@@ -7,7 +7,6 @@
 #include "generated_plugin_registrant.h"
 
 #include <desktop_drop/desktop_drop_plugin.h>
-#include <fc_native_video_thumbnail/fc_native_video_thumbnail_plugin_c_api.h>
 #include <screen_retriever/screen_retriever_plugin.h>
 #include <tray_manager/tray_manager_plugin.h>
 #include <window_manager/window_manager_plugin.h>
@@ -15,8 +14,6 @@
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   DesktopDropPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("DesktopDropPlugin"));
-  FcNativeVideoThumbnailPluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FcNativeVideoThumbnailPluginCApi"));
   ScreenRetrieverPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ScreenRetrieverPlugin"));
   TrayManagerPluginRegisterWithRegistrar(

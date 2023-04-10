@@ -1,14 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:wallpaper_manager/app_style.dart';
 import 'package:wallpaper_manager/bridge/native.dart';
 import 'package:wallpaper_manager/utils.dart';
 
 class WallpaperController extends ChangeNotifier {
   List<GalleryOrWallpaper> images = [];
+  List<WallPaper> favs = [];
+  int currentFavId = 0;
+  bool setSwitch = false;
+
+  switchAutoWallpaper() async {
+    favs = await api.getAllFavs();
+    if (favs.isEmpty) {
+      SmartDialog.showToast("无图片");
+      setSwitch = false;
+    } else {
+      setSwitch = !setSwitch;
+    }
+
+    notifyListeners();
+  }
+
   init() async {
     images = await api.getAllItems();
+    favs = await api.getAllFavs();
     // print(images.length);
     notifyListeners();
+  }
+
+  Stream switchRandomFavs() async* {
+    while (1 == 1) {
+      await Future.delayed(
+          const Duration(seconds: AppStyle.switchImageDuration));
+      if (!setSwitch) {
+        continue;
+      }
+
+      final currentPaper = favs[currentFavId];
+
+      favs = await api.getAllFavs();
+      if (favs.isEmpty) {
+        continue;
+      }
+      final isExist = favs.firstWhere(
+          (element) => element.filePath == currentPaper.filePath, orElse: () {
+        return WallPaper(
+            wallPaperId: -1,
+            filePath: "",
+            fileHash: "",
+            createAt: -1,
+            isDeleted: -1,
+            isFav: -1);
+      });
+
+      if (isExist.wallPaperId == -1) {
+        currentFavId = 0;
+        await api.setWallPaper(s: favs[currentFavId].filePath);
+        continue;
+      }
+
+      if (currentFavId == favs.length - 1) {
+        currentFavId = 0;
+        await api.setWallPaper(s: favs[currentFavId].filePath);
+        continue;
+      }
+
+      currentFavId = currentFavId + 1;
+      await api.setWallPaper(s: favs[currentFavId].filePath);
+      continue;
+    }
   }
 
   Future deleteImage(WallPaper i) async {

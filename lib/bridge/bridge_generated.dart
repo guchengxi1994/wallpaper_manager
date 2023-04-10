@@ -53,6 +53,10 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kSetIsFavByIdConstMeta;
 
+  Future<List<WallPaper>> getAllFavs({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetAllFavsConstMeta;
+
   Future<String> getCurrentWallPaper({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetCurrentWallPaperConstMeta;
@@ -336,6 +340,22 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "set_is_fav_by_id",
         argNames: ["i", "isFav"],
+      );
+
+  Future<List<WallPaper>> getAllFavs({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_all_favs(port_),
+      parseSuccessData: _wire2api_list_wall_paper,
+      constMeta: kGetAllFavsConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetAllFavsConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_all_favs",
+        argNames: [],
       );
 
   Future<String> getCurrentWallPaper({dynamic hint}) {
@@ -1025,6 +1045,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Int64, ffi.Int64)>>('wire_set_is_fav_by_id');
   late final _wire_set_is_fav_by_id =
       _wire_set_is_fav_by_idPtr.asFunction<void Function(int, int, int)>();
+
+  void wire_get_all_favs(
+    int port_,
+  ) {
+    return _wire_get_all_favs(
+      port_,
+    );
+  }
+
+  late final _wire_get_all_favsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_all_favs');
+  late final _wire_get_all_favs =
+      _wire_get_all_favsPtr.asFunction<void Function(int)>();
 
   void wire_get_current_wall_paper(
     int port_,
