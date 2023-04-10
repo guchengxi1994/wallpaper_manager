@@ -75,6 +75,10 @@ pub fn set_is_fav_by_id(i: i64, is_fav: i64) -> i64 {
     block_on(async { WallPaper::set_fav_by_id(i, is_fav) })
 }
 
+pub fn get_all_favs() -> Vec<WallPaper> {
+    block_on(async { WallPaper::get_all_favs() })
+}
+
 pub fn get_current_wall_paper() -> String {
     let f = wallpaper::get();
     match f {

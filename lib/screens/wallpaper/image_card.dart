@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:io';
 import 'dart:ui';
@@ -24,20 +24,21 @@ class ImageCard extends StatelessWidget {
   bool isInputAnImage(String s) {
     final ext = path.extension(s);
     return [
-      'jpg',
-      'jpx',
-      'apng',
-      'png',
-      'gif',
-      'webp',
-      'tiff',
-      'bmp',
+      '.jpg',
+      '.jpx',
+      '.apng',
+      '.png',
+      '.gif',
+      '.webp',
+      '.tiff',
+      '.bmp',
     ].contains(ext);
   }
 
   @override
   Widget build(BuildContext context) {
     final isImage = isInputAnImage(paper.filePath);
+    // debugPrint("[flutter] ${paper.filePath} is image? $isImage");
     return HoverWidget(
       hoverChild: _onHovering(context, isImage),
       onHover: (event) {},

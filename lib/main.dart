@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 import 'screens/wallpaper/sub_process_controller.dart';
+import 'screens/wallpaper/wallpaper_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SubProcessController()..init()),
+        ChangeNotifierProvider(create: (_) => WallpaperController()..init()),
       ],
       builder: (context, child) {
         return MaterialApp(

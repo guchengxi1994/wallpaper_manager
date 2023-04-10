@@ -52,6 +52,11 @@ pub extern "C" fn wire_set_is_fav_by_id(port_: i64, i: i64, is_fav: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_get_all_favs(port_: i64) {
+    wire_get_all_favs_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_get_current_wall_paper(port_: i64) {
     wire_get_current_wall_paper_impl(port_)
 }
